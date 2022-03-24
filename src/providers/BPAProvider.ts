@@ -1,0 +1,239 @@
+import postgresPool from "../resources/postgres"
+
+export default class BPAProvider {
+    /**
+     * @param { string } start  - data no formato YYYY-MM-DD
+     * @param { string } end  - data no formato YYYY-MM-DD
+     * @returns {Array|object} array contendo as linhas da consulta
+     */
+
+    static async getBPAByPeriod(start, end): Promise<any> {
+        try {
+            const result = await postgresPool.pool.query(`
+            select
+            CONSULTA.NUMERO as Num_Consulta,
+            Paciente.PRONTUARIO as Paciente_Prontuario,
+            Profissional_Informacoes_CNS.valor as Profissional_CNS,
+            Profissional_Servidor_Dados_Pessoais.NOME as Profissional_Nome,
+            Profissional_Informacoes_CBO.valor as Profissional_CBO,
+            Paciente.NRO_CARTAO_SAUDE as Paciente_Cartao_SUS,
+            Paciente.NOME as Paciente_Nome,
+            Paciente.SEXO_BIOLOGICO as Paciente_Sexo_Biologico,
+            Paciente.DT_NASCIMENTO as Paciente_Data_Nascimento,
+            Paciente.NAC_CODIGO as Paciente_Nacionalidade,
+            Paciente.COR as Paciente_Cor,
+            Paciente_Endereco.BCL_CLO_CEP as Paciente_Endereco_CEP,
+            Paciente_Endereco_Cidade.UF_SIGLA as Paciente_Endereço_UF,
+            Paciente_Endereco_Cidade.NOME as Paciente_Endereço_Cidade,
+            Paciente_Endereco.TIPO_ENDERECO as Paciente_Endereço_Tipo_Logradouro,
+            Paciente_Endereco_Logradouro.NOME as Paciente_Endereço_Logradouro,
+            Paciente_Endereco.NRO_LOGRADOURO as Paciente_Endereço_Numero,
+            Paciente_Endereco.COMPL_LOGRADOURO as Paciente_Endereço_Complemento,
+            Paciente_Endereco.BAIRRO as Paciente_Endereco_Bairro,
+            Paciente_Contato.DDD as Paciente_Telefone_DDD,-- DIFERE
+            Paciente_Contato.NRO_FONE as Paciente_Telefone_Numero,
+            CONSULTA.DT_CONSULTA as Data_Consulta,
+            fat_itens_proced.cod_tabela as Procedimento_Codigo,
+            MAM_Procedimento_Realizado.QUANTIDADE as Procedimento_Quantidade,
+            replace(CIDS.codigo, '.', '') as CID
+            from
+            AGH.AAC_CONSULTAS CONSULTA
+            left outer join AGH.AAC_CONDICAO_ATENDIMENTOS Condicao_Atendimento on CONSULTA.FAG_CAA_SEQ = Condicao_Atendimento.SEQ
+            inner join AGH.AAC_GRADE_AGENDAMEN_CONSULTAS Grade on CONSULTA.GRD_SEQ = Grade.SEQ
+            inner join AGH.AGH_EQUIPES Grade_Equipe on Grade.EQP_SEQ = Grade_Equipe.SEQ
+            inner join AGH.RAP_SERVIDORES Pofissional_Responsavel on Grade_Equipe.SER_MATRICULA = Pofissional_Responsavel.MATRICULA
+            and Grade_Equipe.SER_VIN_CODIGO = Pofissional_Responsavel.VIN_CODIGO
+            inner join AGH.RAP_PESSOAS_FISICAS Pofissional_Responsavel_Dados_Pessoais on Pofissional_Responsavel.PES_CODIGO = Pofissional_Responsavel_Dados_Pessoais.CODIGO
+            left outer join AGH.RAP_QUALIFICACOES Pofissional_Responsavel_Qualificacoes on Pofissional_Responsavel_Dados_Pessoais.CODIGO = Pofissional_Responsavel_Qualificacoes.PES_CODIGO
+            left outer join AGH.AGH_UNIDADES_FUNCIONAIS Unidade_Funcional on Pofissional_Responsavel.UNF_SEQ_LOTACAO = Unidade_Funcional.SEQ
+            left outer join AGH.AGH_ALAS Unidade_Funcional_Ala on Unidade_Funcional.IND_ALA = Unidade_Funcional_Ala.CODIGO
+            left outer join AGH.AGH_ESPECIALIDADES Especialidade_Grade on Grade.ESP_SEQ = Especialidade_Grade.SEQ
+            left outer join AGH.AGH_ESPECIALIDADES Especialidade_Grade_2 on Especialidade_Grade.ESP_SEQ = Especialidade_Grade_2.SEQ
+            left outer join AGH.AGH_PROF_ESPECIALIDADES Profissional_Especialidade on Grade.PRE_ESP_SEQ = Profissional_Especialidade.ESP_SEQ
+            and Grade.PRE_SER_MATRICULA = Profissional_Especialidade.SER_MATRICULA
+            and Grade.PRE_SER_VIN_CODIGO = Profissional_Especialidade.SER_VIN_CODIGO
+            left outer join AGH.RAP_SERVIDORES Profissional_Servidor on Profissional_Especialidade.SER_MATRICULA = Profissional_Servidor.MATRICULA
+            and Profissional_Especialidade.SER_VIN_CODIGO = Profissional_Servidor.VIN_CODIGO
+            left outer join AGH.RAP_PESSOAS_FISICAS Profissional_Servidor_Dados_Pessoais on Profissional_Servidor.PES_CODIGO = Profissional_Servidor_Dados_Pessoais.CODIGO
+            inner join AGH.AGH_UNIDADES_FUNCIONAIS Grade_Unidade_Funcional on Grade.USL_UNF_SEQ = Grade_Unidade_Funcional.SEQ
+            left outer join AGH.AIP_PACIENTES Paciente on CONSULTA.PAC_CODIGO = Paciente.CODIGO
+            left outer join AGH.AIP_CONTATOS_PACIENTES Paciente_Contato on Paciente.CODIGO = Paciente_Contato.PAC_CODIGO
+            left outer join AGH.AIP_ENDERECOS_PACIENTES Paciente_Endereco on Paciente.CODIGO = Paciente_Endereco.PAC_CODIGO
+            left outer join AGH.AIP_BAIRROS_CEP_LOGRADOURO Paciente_Endereco_Bairro on Paciente_Endereco.BCL_BAI_CODIGO = Paciente_Endereco_Bairro.BAI_CODIGO
+            and Paciente_Endereco.BCL_CLO_CEP = Paciente_Endereco_Bairro.CLO_CEP
+            and Paciente_Endereco.BCL_CLO_LGR_CODIGO = Paciente_Endereco_Bairro.CLO_LGR_CODIGO
+            left outer join AGH.AIP_BAIRROS Paciente_Endereco_Bairro2 on Paciente_Endereco_Bairro.BAI_CODIGO = Paciente_Endereco_Bairro2.CODIGO
+            left outer join AGH.AIP_LOGRADOUROS Paciente_Endereco_Logradouro on Paciente_Endereco_Bairro.CLO_LGR_CODIGO = Paciente_Endereco_Logradouro.CODIGO
+            left outer join AGH.AIP_CIDADES Paciente_Endereco_Cidade on Paciente_Endereco_Logradouro.CDD_CODIGO = Paciente_Endereco_Cidade.CODIGO
+            left outer join AGH.AIP_CIDADES Paciente_Endereco_Cidade2 on Paciente_Endereco_Cidade.COD_CIDADE = Paciente_Endereco_Cidade2.CODIGO
+            left outer join AGH.AIP_UFS Paciente_Endereco_UF on Paciente_Endereco_Cidade2.UF_SIGLA = Paciente_Endereco_UF.SIGLA
+            left outer join AGH.AIP_PAISES Paciente_Endereco_Pais on Paciente_Endereco_UF.PAS_SIGLA = Paciente_Endereco_Pais.SIGLA
+            left outer join AGH.AIP_TIPO_LOGRADOUROS Paciente_Endereco_Logradouro_Tipo on Paciente_Endereco_Logradouro.TLG_CODIGO = Paciente_Endereco_Logradouro_Tipo.CODIGO
+            left outer join AGH.AIP_TITULO_LOGRADOUROS aiptitulol53_ on Paciente_Endereco_Logradouro.TIT_CODIGO = aiptitulol53_.CODIGO
+            left outer join AGH.AIP_CEP_LOGRADOUROS Paciente_Endereco_Logradouro_CEP on Paciente_Endereco_Bairro.CLO_CEP = Paciente_Endereco_Logradouro_CEP.CEP
+            and Paciente_Endereco_Bairro.CLO_LGR_CODIGO = Paciente_Endereco_Logradouro_CEP.LGR_CODIGO
+            left outer join AGH.AIP_LOGRADOUROS Paciente_Endereco_Logradouro_CEP2 on Paciente_Endereco_Logradouro_CEP.LGR_CODIGO = Paciente_Endereco_Logradouro_CEP2.CODIGO
+            left outer join AGH.AIP_CIDADES aipcidades56_ on Paciente_Endereco.CDD_CODIGO = aipcidades56_.CODIGO
+            left outer join AGH.AIP_LOGRADOUROS Paciente_Endereco_Logradouro_CEP3 on Paciente_Endereco.BCL_CLO_LGR_CODIGO = Paciente_Endereco_Logradouro_CEP3.CODIGO
+            left outer join AGH.AIP_UFS Paciente_Endereco_UF2 on Paciente_Endereco.UF_SIGLA = Paciente_Endereco_UF2.SIGLA
+            left outer join AGH.AIP_PACIENTE_DADO_CLINICOS Paciente_Dados_Clinicos on Paciente.CODIGO = Paciente_Dados_Clinicos.PAC_CODIGO
+            left outer join AGH.AIP_PACIENTES_DADOS_CNS Paciente_Dados_CNS on Paciente.CODIGO = Paciente_Dados_CNS.PAC_CODIGO       
+            left outer join AGH.AIP_GRUPO_FAMILIAR_PACIENTES Paciente_Grupo_Familiar on Paciente.CODIGO = Paciente_Grupo_Familiar.PAC_CODIGO
+            left outer join AGH.AAC_PAGADORES Pagador on CONSULTA.FAG_PGD_SEQ = Pagador.SEQ
+            left outer join AGH.FAT_PROCED_AMB_REALIZADOS Faturamento_Procedimento_Realizado on CONSULTA.NUMERO = Faturamento_Procedimento_Realizado.PRH_CON_NUMERO
+            left outer join AGH.AAC_CONSULTA_PROCED_HOSPITALAR Consulta_Procedimento_Hospitalar on CONSULTA.NUMERO = Consulta_Procedimento_Hospitalar.CON_NUMERO
+            left outer join AGH.FAT_PROCED_HOSP_INTERNOS Procedimento_Interno on Consulta_Procedimento_Hospitalar.PHI_SEQ = Procedimento_Interno.SEQ
+            left outer join AGH.MAM_PROC_REALIZADOS MAM_Procedimento_Realizado on CONSULTA.NUMERO = MAM_Procedimento_Realizado.CON_NUMERO
+            left outer join AGH.AAC_RETORNOS Retorno on CONSULTA.RET_SEQ = Retorno.SEQ
+            inner join AGH.RAP_SERVIDORES Servidor_Cadastro on CONSULTA.SER_MATRICULA = Servidor_Cadastro.MATRICULA
+            and CONSULTA.SER_VIN_CODIGO = Servidor_Cadastro.VIN_CODIGO
+            left outer join AGH.RAP_PESSOAS_FISICAS Servidor_Cadastro_Dados_Pessoais on Servidor_Cadastro.PES_CODIGO = Servidor_Cadastro_Dados_Pessoais.CODIGO
+            left outer join AGH.AAC_SITUACAO_CONSULTAS Situacao_Consulta on CONSULTA.STC_SITUACAO = Situacao_Consulta.SITUACAO
+            left outer join AGH.AAC_TIPO_AGENDAMENTOS Tipo_Agendamento on CONSULTA.FAG_TAG_SEQ = Tipo_Agendamento.SEQ
+            LEFT OUTER JOIN AGH.FAT_CONV_GRUPO_ITENS_PROCED fat_grupo ON Faturamento_Procedimento_Realizado.PRH_PHI_SEQ = fat_grupo.phi_seq
+            LEFT OUTER JOIN AGH.FAT_ITENS_PROCED_HOSPITALAR fat_itens_proced ON fat_grupo.IPH_PHO_SEQ = fat_itens_proced.PHO_SEQ
+            AND fat_grupo.IPH_SEQ = fat_itens_proced.SEQ 
+            --	LEFT OUTER JOIN
+            --		agh.fat_cbos CBO
+            --			on CBO.seq = Faturamento_Procedimento_Realizado.PRH_PHI_SEQ
+            LEFT OUTER JOIN agh.rap_pessoa_tipo_informacoes Profissional_Informacoes_CBO on (
+                Profissional_Informacoes_CBO.pes_codigo = Profissional_Servidor_Dados_Pessoais.codigo
+                AND Profissional_Informacoes_CBO.tii_seq = 2
+            )
+            LEFT OUTER JOIN agh.rap_pessoa_tipo_informacoes Profissional_Informacoes_CNS on (
+                Profissional_Informacoes_CNS.pes_codigo = Profissional_Servidor_Dados_Pessoais.codigo
+                AND Profissional_Informacoes_CNS.tii_seq = 7
+            )
+            LEFT OUTER JOIN agh.agh_cids as CIDS
+                on CIDS.seq = Faturamento_Procedimento_Realizado.cid_seq
+            where
+            CONSULTA.DT_CONSULTA between '${start}' and '${end}'
+            order by
+            Paciente.NOME asc,
+            Paciente.PRONTUARIO asc,
+            CONSULTA.DT_CONSULTA asc
+            `)
+            return (result.rows)
+        } catch (err) {
+            console.error(err.message)
+            return (err.message)
+        }
+    }
+
+    /**
+     * @param { number } atendimento  - número do atendimento
+     * @returns {Array|object} array contendo as linhas da consulta
+     */
+    static async getBPA(atendimento) {
+        try {
+            const result = await postgresPool.pool.query(`
+            select
+            CONSULTA.NUMERO as Num_Consulta,
+            Paciente.PRONTUARIO as Paciente_Prontuario,
+            Profissional_Informacoes_CNS.valor as Profissional_CNS,
+            Profissional_Servidor_Dados_Pessoais.NOME as Profissional_Nome,
+            Profissional_Informacoes_CBO.valor as Profissional_CBO,
+            Paciente.NRO_CARTAO_SAUDE as Paciente_Cartao_SUS,
+            Paciente.NOME as Paciente_Nome,
+            Paciente.SEXO_BIOLOGICO as Paciente_Sexo_Biologico,
+            Paciente.DT_NASCIMENTO as Paciente_Data_Nascimento,
+            Paciente.NAC_CODIGO as Paciente_Nacionalidade,
+            Paciente.COR as Paciente_Cor,
+            Paciente_Endereco.BCL_CLO_CEP as Paciente_Endereco_CEP,
+            Paciente_Endereco_Cidade.UF_SIGLA as Paciente_Endereço_UF,
+            Paciente_Endereco_Cidade.NOME as Paciente_Endereço_Cidade,
+            Paciente_Endereco.TIPO_ENDERECO as Paciente_Endereço_Tipo_Logradouro,
+            Paciente_Endereco_Logradouro.NOME as Paciente_Endereço_Logradouro,
+            Paciente_Endereco.NRO_LOGRADOURO as Paciente_Endereço_Numero,
+            Paciente_Endereco.COMPL_LOGRADOURO as Paciente_Endereço_Complemento,
+            Paciente_Endereco.BAIRRO as Paciente_Endereco_Bairro,
+            Paciente_Contato.DDD as Paciente_Telefone_DDD,-- DIFERE
+            Paciente_Contato.NRO_FONE as Paciente_Telefone_Numero,
+            CONSULTA.DT_CONSULTA as Data_Consulta,
+            fat_itens_proced.cod_tabela as Procedimento_Codigo,
+            MAM_Procedimento_Realizado.QUANTIDADE as Procedimento_Quantidade,
+            replace(CIDS.codigo, '.', '') as CID
+            from
+            AGH.AAC_CONSULTAS CONSULTA
+            left outer join AGH.AAC_CONDICAO_ATENDIMENTOS Condicao_Atendimento on CONSULTA.FAG_CAA_SEQ = Condicao_Atendimento.SEQ
+            inner join AGH.AAC_GRADE_AGENDAMEN_CONSULTAS Grade on CONSULTA.GRD_SEQ = Grade.SEQ
+            inner join AGH.AGH_EQUIPES Grade_Equipe on Grade.EQP_SEQ = Grade_Equipe.SEQ
+            inner join AGH.RAP_SERVIDORES Pofissional_Responsavel on Grade_Equipe.SER_MATRICULA = Pofissional_Responsavel.MATRICULA
+            and Grade_Equipe.SER_VIN_CODIGO = Pofissional_Responsavel.VIN_CODIGO
+            inner join AGH.RAP_PESSOAS_FISICAS Pofissional_Responsavel_Dados_Pessoais on Pofissional_Responsavel.PES_CODIGO = Pofissional_Responsavel_Dados_Pessoais.CODIGO
+            left outer join AGH.RAP_QUALIFICACOES Pofissional_Responsavel_Qualificacoes on Pofissional_Responsavel_Dados_Pessoais.CODIGO = Pofissional_Responsavel_Qualificacoes.PES_CODIGO
+            left outer join AGH.AGH_UNIDADES_FUNCIONAIS Unidade_Funcional on Pofissional_Responsavel.UNF_SEQ_LOTACAO = Unidade_Funcional.SEQ
+            left outer join AGH.AGH_ALAS Unidade_Funcional_Ala on Unidade_Funcional.IND_ALA = Unidade_Funcional_Ala.CODIGO
+            left outer join AGH.AGH_ESPECIALIDADES Especialidade_Grade on Grade.ESP_SEQ = Especialidade_Grade.SEQ
+            left outer join AGH.AGH_ESPECIALIDADES Especialidade_Grade_2 on Especialidade_Grade.ESP_SEQ = Especialidade_Grade_2.SEQ
+            left outer join AGH.AGH_PROF_ESPECIALIDADES Profissional_Especialidade on Grade.PRE_ESP_SEQ = Profissional_Especialidade.ESP_SEQ
+            and Grade.PRE_SER_MATRICULA = Profissional_Especialidade.SER_MATRICULA
+            and Grade.PRE_SER_VIN_CODIGO = Profissional_Especialidade.SER_VIN_CODIGO
+            left outer join AGH.RAP_SERVIDORES Profissional_Servidor on Profissional_Especialidade.SER_MATRICULA = Profissional_Servidor.MATRICULA
+            and Profissional_Especialidade.SER_VIN_CODIGO = Profissional_Servidor.VIN_CODIGO
+            left outer join AGH.RAP_PESSOAS_FISICAS Profissional_Servidor_Dados_Pessoais on Profissional_Servidor.PES_CODIGO = Profissional_Servidor_Dados_Pessoais.CODIGO
+            inner join AGH.AGH_UNIDADES_FUNCIONAIS Grade_Unidade_Funcional on Grade.USL_UNF_SEQ = Grade_Unidade_Funcional.SEQ
+            left outer join AGH.AIP_PACIENTES Paciente on CONSULTA.PAC_CODIGO = Paciente.CODIGO
+            left outer join AGH.AIP_CONTATOS_PACIENTES Paciente_Contato on Paciente.CODIGO = Paciente_Contato.PAC_CODIGO
+            left outer join AGH.AIP_ENDERECOS_PACIENTES Paciente_Endereco on Paciente.CODIGO = Paciente_Endereco.PAC_CODIGO
+            left outer join AGH.AIP_BAIRROS_CEP_LOGRADOURO Paciente_Endereco_Bairro on Paciente_Endereco.BCL_BAI_CODIGO = Paciente_Endereco_Bairro.BAI_CODIGO
+            and Paciente_Endereco.BCL_CLO_CEP = Paciente_Endereco_Bairro.CLO_CEP
+            and Paciente_Endereco.BCL_CLO_LGR_CODIGO = Paciente_Endereco_Bairro.CLO_LGR_CODIGO
+            left outer join AGH.AIP_BAIRROS Paciente_Endereco_Bairro2 on Paciente_Endereco_Bairro.BAI_CODIGO = Paciente_Endereco_Bairro2.CODIGO
+            left outer join AGH.AIP_LOGRADOUROS Paciente_Endereco_Logradouro on Paciente_Endereco_Bairro.CLO_LGR_CODIGO = Paciente_Endereco_Logradouro.CODIGO
+            left outer join AGH.AIP_CIDADES Paciente_Endereco_Cidade on Paciente_Endereco_Logradouro.CDD_CODIGO = Paciente_Endereco_Cidade.CODIGO
+            left outer join AGH.AIP_CIDADES Paciente_Endereco_Cidade2 on Paciente_Endereco_Cidade.COD_CIDADE = Paciente_Endereco_Cidade2.CODIGO
+            left outer join AGH.AIP_UFS Paciente_Endereco_UF on Paciente_Endereco_Cidade2.UF_SIGLA = Paciente_Endereco_UF.SIGLA
+            left outer join AGH.AIP_PAISES Paciente_Endereco_Pais on Paciente_Endereco_UF.PAS_SIGLA = Paciente_Endereco_Pais.SIGLA
+            left outer join AGH.AIP_TIPO_LOGRADOUROS Paciente_Endereco_Logradouro_Tipo on Paciente_Endereco_Logradouro.TLG_CODIGO = Paciente_Endereco_Logradouro_Tipo.CODIGO
+            left outer join AGH.AIP_TITULO_LOGRADOUROS aiptitulol53_ on Paciente_Endereco_Logradouro.TIT_CODIGO = aiptitulol53_.CODIGO
+            left outer join AGH.AIP_CEP_LOGRADOUROS Paciente_Endereco_Logradouro_CEP on Paciente_Endereco_Bairro.CLO_CEP = Paciente_Endereco_Logradouro_CEP.CEP
+            and Paciente_Endereco_Bairro.CLO_LGR_CODIGO = Paciente_Endereco_Logradouro_CEP.LGR_CODIGO
+            left outer join AGH.AIP_LOGRADOUROS Paciente_Endereco_Logradouro_CEP2 on Paciente_Endereco_Logradouro_CEP.LGR_CODIGO = Paciente_Endereco_Logradouro_CEP2.CODIGO
+            left outer join AGH.AIP_CIDADES aipcidades56_ on Paciente_Endereco.CDD_CODIGO = aipcidades56_.CODIGO
+            left outer join AGH.AIP_LOGRADOUROS Paciente_Endereco_Logradouro_CEP3 on Paciente_Endereco.BCL_CLO_LGR_CODIGO = Paciente_Endereco_Logradouro_CEP3.CODIGO
+            left outer join AGH.AIP_UFS Paciente_Endereco_UF2 on Paciente_Endereco.UF_SIGLA = Paciente_Endereco_UF2.SIGLA
+            left outer join AGH.AIP_PACIENTE_DADO_CLINICOS Paciente_Dados_Clinicos on Paciente.CODIGO = Paciente_Dados_Clinicos.PAC_CODIGO
+            left outer join AGH.AIP_PACIENTES_DADOS_CNS Paciente_Dados_CNS on Paciente.CODIGO = Paciente_Dados_CNS.PAC_CODIGO       
+            left outer join AGH.AIP_GRUPO_FAMILIAR_PACIENTES Paciente_Grupo_Familiar on Paciente.CODIGO = Paciente_Grupo_Familiar.PAC_CODIGO
+            left outer join AGH.AAC_PAGADORES Pagador on CONSULTA.FAG_PGD_SEQ = Pagador.SEQ
+            left outer join AGH.FAT_PROCED_AMB_REALIZADOS Faturamento_Procedimento_Realizado on CONSULTA.NUMERO = Faturamento_Procedimento_Realizado.PRH_CON_NUMERO
+            left outer join AGH.AAC_CONSULTA_PROCED_HOSPITALAR Consulta_Procedimento_Hospitalar on CONSULTA.NUMERO = Consulta_Procedimento_Hospitalar.CON_NUMERO
+            left outer join AGH.FAT_PROCED_HOSP_INTERNOS Procedimento_Interno on Consulta_Procedimento_Hospitalar.PHI_SEQ = Procedimento_Interno.SEQ
+            left outer join AGH.MAM_PROC_REALIZADOS MAM_Procedimento_Realizado on CONSULTA.NUMERO = MAM_Procedimento_Realizado.CON_NUMERO
+            left outer join AGH.AAC_RETORNOS Retorno on CONSULTA.RET_SEQ = Retorno.SEQ
+            inner join AGH.RAP_SERVIDORES Servidor_Cadastro on CONSULTA.SER_MATRICULA = Servidor_Cadastro.MATRICULA
+            and CONSULTA.SER_VIN_CODIGO = Servidor_Cadastro.VIN_CODIGO
+            left outer join AGH.RAP_PESSOAS_FISICAS Servidor_Cadastro_Dados_Pessoais on Servidor_Cadastro.PES_CODIGO = Servidor_Cadastro_Dados_Pessoais.CODIGO
+            left outer join AGH.AAC_SITUACAO_CONSULTAS Situacao_Consulta on CONSULTA.STC_SITUACAO = Situacao_Consulta.SITUACAO
+            left outer join AGH.AAC_TIPO_AGENDAMENTOS Tipo_Agendamento on CONSULTA.FAG_TAG_SEQ = Tipo_Agendamento.SEQ
+            LEFT OUTER JOIN AGH.FAT_CONV_GRUPO_ITENS_PROCED fat_grupo ON Faturamento_Procedimento_Realizado.PRH_PHI_SEQ = fat_grupo.phi_seq
+            LEFT OUTER JOIN AGH.FAT_ITENS_PROCED_HOSPITALAR fat_itens_proced ON fat_grupo.IPH_PHO_SEQ = fat_itens_proced.PHO_SEQ
+            AND fat_grupo.IPH_SEQ = fat_itens_proced.SEQ 
+            --	LEFT OUTER JOIN
+            --		agh.fat_cbos CBO
+            --			on CBO.seq = Faturamento_Procedimento_Realizado.PRH_PHI_SEQ
+            LEFT OUTER JOIN agh.rap_pessoa_tipo_informacoes Profissional_Informacoes_CBO on (
+                Profissional_Informacoes_CBO.pes_codigo = Profissional_Servidor_Dados_Pessoais.codigo
+                AND Profissional_Informacoes_CBO.tii_seq = 2
+            )
+            LEFT OUTER JOIN agh.rap_pessoa_tipo_informacoes Profissional_Informacoes_CNS on (
+                Profissional_Informacoes_CNS.pes_codigo = Profissional_Servidor_Dados_Pessoais.codigo
+                AND Profissional_Informacoes_CNS.tii_seq = 7
+            )
+            LEFT OUTER JOIN agh.agh_cids as CIDS
+                on CIDS.seq = Faturamento_Procedimento_Realizado.cid_seq
+            where
+            consulta.numero = ${atendimento}
+            order by
+            Paciente.NOME asc,
+            Paciente.PRONTUARIO asc,
+            CONSULTA.DT_CONSULTA asc
+            `)
+            return (result.rows)
+        } catch (err) {
+            console.error(err.message)
+            return (err.message)
+        }
+    }
+}

@@ -14,6 +14,7 @@ import activeDirectoryAuthMiddleware from './middlewares/activeDirectoryAuth'
 import userRouter from './routes/user'
 import rmaRouter from './routes/rma'
 import materialRouter from './routes/material'
+import bpaRouter from './routes/bpa'
 
 /**
  * Carrega as variáveis de ambiente do arquivo .env para process.env
@@ -39,6 +40,7 @@ app.use('/users/login', activeDirectoryAuthMiddleware.authenticateUser)
 app.use('/rma', rmaRouter)
 app.use('/users', userRouter)
 app.use('/material', materialRouter)
+app.use('/bpa', bpaRouter)
 
 // inicia a aplicação ouvindo na porta definida
 app.listen(process.env.PORT || 3000)
