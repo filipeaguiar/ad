@@ -7,7 +7,7 @@ export default class BPAProvider {
      * @returns {Array|object} array contendo as linhas da consulta
      */
 
-    static async getBPAByPeriod(start, end): Promise<any> {
+    static async getBPAiByPeriod(start, end): Promise<any> {
         try {
             const result = await postgresPool.pool.query(`
             select

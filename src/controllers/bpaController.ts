@@ -14,7 +14,7 @@ export default class bpaController {
             res.send(await BPAProvider.getBPA(atendimento))
         }
         else { 
-            res.send(await BPAProvider.getBPAByPeriod(start, end))
+            res.send(await BPAProvider.getBPAiByPeriod(start, end))
         }
     }
 }
