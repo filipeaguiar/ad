@@ -1,12 +1,129 @@
 import postgresPool from "../resources/postgres"
 
 export default class BPAProvider {
+
+    static async getBPAc(mesAno) {
+        const startDate = new Date(
+            new Date(`${mesAno}-01`).getFullYear(),
+            new Date(`${mesAno}-01`).getMonth() + 1, 1)
+            .toISOString().split('T')[0]
+        const endDate = new Date(
+            new Date(`${mesAno}-01`).getFullYear(),
+            new Date(`${mesAno}-01`).getMonth() + 2, 0)
+            .toISOString().split('T')[0]
+        try {
+            const result = await postgresPool.pool.query(`
+                (SELECT 
+                CASE
+                    WHEN servidores_informacoes_cbo2.valor is NULL THEN servidores_informacoes_cbo.valor
+                    ELSE servidores_informacoes_cbo2.valor
+                END as CBO,
+                date_part('year', age(pacientes.dt_nascimento)) as idade,
+                count(*) as quantidade,
+                -- Regras de Negócio de Consultas:
+                -- Caso o profissional seja médico clínico ou professor, aplicar procedimento 03.01.01.007-2
+                -- Para os demais, aplicar procedimento 03.01.01.004-8
+
+                CASE
+                    WHEN (servidores_informacoes_cbo2.valor like '2251%') or (servidores_informacoes_cbo.valor like '2251%') THEN 0301010072
+                    WHEN (servidores_informacoes_cbo2.valor like '2345%') or (servidores_informacoes_cbo.valor like '2345%') THEN 0301010072
+                    ELSE 0301010048
+                END as procedimento_sus
+                -------------------------------------------------------------------
+
+                from agh.aac_consultas as consultas
+                -- Informações da Grade
+                LEFT JOIN agh.aac_grade_agendamen_consultas as grades ON grades.seq = consultas.grd_seq
+                -- Pega informações do retorno, pra saber status da consulta
+                LEFT JOIN agh.aac_retornos ret ON ret.seq = consultas.ret_seq 
+                -- Informações do Profissional (Dados de Servidor)
+                LEFT JOIN agh.rap_servidores as servidores on 
+                    servidores.matricula = 
+                        (CASE
+                            WHEN consultas.ser_matricula_atendido IS NOT NULL THEN consultas.ser_matricula_atendido
+                            WHEN consultas.ser_matricula_alterado IS NOT NULL THEN consultas.ser_matricula_alterado	
+                            WHEN consultas.ser_matricula_consultado IS NOT NULL THEN consultas.ser_matricula_consultado	
+                            WHEN consultas.ser_matricula IS NOT NULL THEN consultas.ser_matricula
+                            ELSE NULL
+                        END)
+                    AND servidores.vin_codigo = 
+                        (CASE
+                            WHEN consultas.ser_matricula_atendido IS NOT NULL THEN consultas.ser_vin_codigo_atendido
+                            WHEN consultas.ser_matricula_alterado IS NOT NULL THEN consultas.ser_vin_codigo_alterado	
+                            WHEN consultas.ser_matricula_consultado IS NOT NULL THEN consultas.ser_vin_codigo_consultado	
+                            WHEN consultas.ser_matricula IS NOT NULL THEN consultas.ser_vin_codigo
+                            ELSE NULL
+                        END)
+
+                -- Informações do Profissional (Dados Pessoais)
+                LEFT JOIN agh.rap_pessoas_fisicas as pessoas on servidores.pes_codigo = pessoas.codigo
+
+                -- Pega o CNS do Profissional
+                LEFT OUTER JOIN agh.rap_pessoa_tipo_informacoes as servidores_informacoes_cns on (
+                servidores_informacoes_cns.pes_codigo = pessoas.codigo AND servidores_informacoes_cns.tii_seq = 7
+                )
+                -- Pega o CBO PRIMARIO do Profissional
+                LEFT OUTER JOIN agh.rap_pessoa_tipo_informacoes as servidores_informacoes_cbo on (
+                servidores_informacoes_cbo.pes_codigo = pessoas.codigo AND servidores_informacoes_cbo.tii_seq = 2
+                )
+
+                -- Pega o CBO SECUNDARIO do Profissional
+                LEFT OUTER JOIN agh.rap_pessoa_tipo_informacoes as servidores_informacoes_cbo2 on (
+                servidores_informacoes_cbo2.pes_codigo = pessoas.codigo AND servidores_informacoes_cbo2.tii_seq = 3
+                )
+                -- Pega o CBO TERCIARIO do Profissional
+                LEFT OUTER JOIN agh.rap_pessoa_tipo_informacoes as servidores_informacoes_cbo3 on (
+                servidores_informacoes_cbo3.pes_codigo = pessoas.codigo AND servidores_informacoes_cbo3.tii_seq = 4
+                )
+
+                LEFT OUTER JOIN agh.aip_pacientes as pacientes on pacientes.codigo = consultas.pac_codigo
+
+                where 
+                (dt_consulta between '${startDate} 00:00:00' and '${endDate} 23:59:59.9999')
+                and ret.descricao <> 'PACIENTE AGENDADO'
+                and ret.descricao <> 'AGUARDANDO ATENDIMENTO'
+                and ret.descricao <> 'PACIENTE FALTOU'
+                and ret.descricao <> 'PROFISSIONAL FALTOU'
+                and ret.descricao <> 'EM ATENDIMENTO'
+                and ret.descricao <> 'PACIENTE DESISTIU CONS'
+                group by 1, 2, 4)
+                UNION
+                (SELECT
+                    cbos.codigo as cbo,
+                    date_part('year', age(pacientes.dt_nascimento)) as idade,
+                    SUM(procedimentos.quantidade) as quantidade,
+                    faturamento_procedimentos.cod_tabela as procedimento_sus
+                FROM agh.mam_proc_realizados as procedimentos
+                LEFT OUTER JOIN agh.fat_conv_grupo_itens_proced as faturamento_grupos 
+                    on faturamento_grupos.phi_seq = procedimentos.phi_seq
+                LEFT OUTER JOIN agh.fat_itens_proced_hospitalar as faturamento_procedimentos 
+                    on faturamento_procedimentos.pho_seq = faturamento_grupos.iph_pho_seq
+                    and faturamento_procedimentos.seq = faturamento_grupos.iph_seq
+                LEFT OUTER JOIN agh.fat_procedimentos_registro as faturamento_registros
+                    on faturamento_registros.cod_procedimento =  faturamento_procedimentos.cod_tabela
+                LEFT OUTER JOIN agh.fat_cbos as cbos
+                    on cbos.seq = procedimentos.cbo
+                LEFT OUTER JOIN agh.aip_pacientes as pacientes on pacientes.codigo = procedimentos.pac_codigo
+                WHERE 
+                procedimentos.dthr_valida BETWEEN '${startDate} 00:00:00' AND '${endDate} 23:59:59.999999'
+                AND procedimentos.cbo IS NOT NULL
+                AND procedimentos.phi_seq IS NOT NULL
+                AND faturamento_registros.cod_registro = '01'
+                group by 1, 2, 4)
+                order by 4 desc, 3 desc, 1 asc                
+            `)
+            console.log(Math.ceil(result.rows.length / 99))
+            return (result.rows)
+        } catch (err) {
+            console.error(err.message)
+            return (err.message)
+        }
+    }
     /**
      * @param { string } start  - data no formato YYYY-MM-DD
      * @param { string } end  - data no formato YYYY-MM-DD
      * @returns {Array|object} array contendo as linhas da consulta
      */
-
     static async getBPAiByPeriod(start, end): Promise<any> {
         try {
             const result = await postgresPool.pool.query(`
@@ -236,4 +353,5 @@ export default class BPAProvider {
             return (err.message)
         }
     }
+
 }

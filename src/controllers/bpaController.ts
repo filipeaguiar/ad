@@ -1,6 +1,14 @@
 import { Request, Response } from 'express'
 import BPAProvider from '../providers/BPAProvider'
 
+
+const BPAcFile = (array: Array<Object>) => {
+    array.forEach((item, linha) => {
+        console.log(`O conteúdo da linha ${linha} é:`)
+        console.log(item)
+    })
+}
+
 export default class bpaController {
     /**
      * 
@@ -13,8 +21,15 @@ export default class bpaController {
         if (!start || !end) {
             res.send(await BPAProvider.getBPA(atendimento))
         }
-        else { 
+        else {
             res.send(await BPAProvider.getBPAiByPeriod(start, end))
         }
+    }
+
+    static async getBPAc(req: Request, res: Response, next) {
+        const BPAc = await BPAProvider.getBPAc(req.params.mesAno)
+        console.log(BPAc)
+        BPAcFile(BPAc)
+        res.send(BPAc)
     }
 }
