@@ -1,7 +1,91 @@
 import postgresPool from "../resources/postgres"
 
 export default class BPAProvider {
+    /**
+     * @param { string } mesAno  - Mês e ano a serem consultados, no formato YYYY-MM
+     * @returns {Array|object} array contendo as linhas da consulta
+     */
+    static async getBPAi(mesAno) {
+        const startDate = new Date(
+            new Date(`${mesAno}-01`).getFullYear(),
+            new Date(`${mesAno}-01`).getMonth() + 1, 1)
+            .toISOString().split('T')[0]
+        const endDate = new Date(
+            new Date(`${mesAno}-01`).getFullYear(),
+            new Date(`${mesAno}-01`).getMonth() + 2, 0)
+            .toISOString().split('T')[0]
+        try {
+            const result = await postgresPool.pool.query(`
+            SELECT
+            faturamento_registros.cod_registro,
+            procedimentos.con_numero as Num_Consulta,
+            procedimentos.pac_codigo,
+            servidores_CNS.valor as CNS,
+            servidores_info.nome as Profissional_Nome,
+            CASE
+                WHEN servidores_CBO2.valor is NULL THEN servidores_CBO1.valor
+                ELSE servidores_CBO2.valor
+            END as CBO,
+            pacientes.nro_cartao_saude as Paciente_Cartao_SUS,
+            Pacientes.NOME as Paciente_Nome,
+            Pacientes.SEXO_BIOLOGICO as Paciente_Sexo_Biologico,
+            Pacientes.DT_NASCIMENTO as Paciente_Data_Nascimento,
+            Pacientes.NAC_CODIGO as Paciente_Nacionalidade,
+            Pacientes.COR as Paciente_Cor,
+            Pacientes_Endereco.BCL_CLO_CEP as Paciente_CEP,
+            procedimentos.quantidade as Procedimento_Quantidade,
+            faturamento_procedimentos.cod_tabela as procedimento_sus
 
+            FROM agh.mam_proc_realizados as procedimentos
+            LEFT OUTER JOIN agh.fat_conv_grupo_itens_proced as faturamento_grupos 
+                on faturamento_grupos.phi_seq = procedimentos.phi_seq
+            LEFT OUTER JOIN agh.fat_itens_proced_hospitalar as faturamento_procedimentos 
+                on faturamento_procedimentos.pho_seq = faturamento_grupos.iph_pho_seq
+                and faturamento_procedimentos.seq = faturamento_grupos.iph_seq
+            LEFT OUTER JOIN agh.fat_procedimentos_registro as faturamento_registros
+                on faturamento_registros.cod_procedimento =  faturamento_procedimentos.cod_tabela
+            LEFT OUTER JOIN agh.fat_cbos as cbos
+                on cbos.seq = procedimentos.cbo
+            LEFT OUTER JOIN agh.aip_pacientes as pacientes 
+                on pacientes.codigo = procedimentos.pac_codigo
+            LEFT OUTER JOIN agh.rap_servidores as servidores
+                on servidores.matricula = procedimentos.ser_matricula
+                and servidores.vin_codigo = procedimentos.ser_vin_codigo
+            LEFT OUTER JOIN agh.rap_pessoa_tipo_informacoes servidores_CNS
+                on servidores_CNS.pes_codigo = servidores.pes_codigo
+                AND servidores_CNS.tii_seq = 7
+            LEFT OUTER JOIN agh.rap_pessoa_tipo_informacoes servidores_CBO1
+                ON servidores_CBO1.pes_codigo = servidores.pes_codigo
+                AND servidores_CBO1.tii_seq = 2
+            LEFT OUTER JOIN agh.rap_pessoa_tipo_informacoes servidores_CBO2
+                ON servidores_CBO2.pes_codigo = servidores.pes_codigo
+                AND servidores_CBO2.tii_seq = 3	
+            LEFT OUTER JOIN agh.rap_pessoas_fisicas as servidores_info
+                on servidores_info.codigo = servidores.pes_codigo
+            LEFT OUTER JOIN AGH.AIP_ENDERECOS_PACIENTES Pacientes_Endereco on Pacientes.CODIGO = Pacientes_Endereco.PAC_CODIGO
+            LEFT OUTER JOIN agh.aac_consultas as consultas
+                ON consultas.numero = procedimentos.con_numero
+            WHERE 
+                procedimentos.dthr_valida BETWEEN '${startDate} 00:00:00' and '${endDate} 23:59:59.999999'
+                AND consultas.ret_seq = 10
+                AND procedimentos.phi_seq IS NOT NULL
+                AND faturamento_procedimentos.cod_tabela NOT IN
+                    (SELECT cod_procedimento FROM
+                        agh.fat_procedimentos_registro
+                        WHERE cod_registro = '01')
+                AND faturamento_registros.cod_registro = '02'
+            `)
+            console.log(Math.ceil(result.rows.length / 99))
+            return (result.rows)
+        } catch (err) {
+            console.error(err.message)
+            return (err.message)
+        }
+    }
+    /**
+     * @param { string } mesAno  - Mês e ano a serem consultados, no formato YYYY-MM
+     * @returns {Array|object} array contendo as linhas da consulta
+     */
     static async getBPAc(mesAno) {
         const startDate = new Date(
             new Date(`${mesAno}-01`).getFullYear(),
@@ -79,7 +163,7 @@ export default class BPAProvider {
                 LEFT OUTER JOIN agh.aip_pacientes as pacientes on pacientes.codigo = consultas.pac_codigo
 
                 where 
-                (dt_consulta between '${startDate} 00:00:00' and '${endDate} 23:59:59.9999')
+                (dt_consulta between '${startDate} 00:00:00' and '${endDate} 23:59:59.999999')
                 and ret.descricao <> 'PACIENTE AGENDADO'
                 and ret.descricao <> 'AGUARDANDO ATENDIMENTO'
                 and ret.descricao <> 'PACIENTE FALTOU'

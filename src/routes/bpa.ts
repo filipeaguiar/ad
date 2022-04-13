@@ -6,5 +6,6 @@ const rmaRouter = Router()
 
 rmaRouter.get('/', jwtValidation.validate, bpaController.getBPA)
 rmaRouter.get('/c/:mesAno', jwtValidation.validate, bpaController.getBPAc)
+rmaRouter.get('/i/:mesAno', jwtValidation.validate, bpaController.getBPAi)
 
 export default rmaRouter
