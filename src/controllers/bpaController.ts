@@ -28,13 +28,10 @@ export default class bpaController {
 
     static async getBPAc(req: Request, res: Response, next) {
         const BPAc = await BPAProvider.getBPAc(req.params.mesAno)
-        console.log(BPAc)
-        //        BPAcFile(BPAc)
         res.send(BPAc)
     }
     static async getBPAi(req: Request, res: Response, next) {
         const BPAi = await BPAProvider.getBPAi(req.params.mesAno)
-        console.log(BPAi)
         res.send(BPAi)
     }
 }

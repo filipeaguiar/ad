@@ -17,7 +17,7 @@ export default class BPAProvider {
         try {
             const result = await postgresPool.pool.query(`
             SELECT
-            faturamento_registros.cod_registro,
+            procedimentos.dthr_valida as Data_Procedimento,
             procedimentos.con_numero as Num_Consulta,
             procedimentos.pac_codigo,
             servidores_CNS.valor as CNS,
