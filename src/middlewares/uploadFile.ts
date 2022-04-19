@@ -15,13 +15,9 @@ let storage = multer.diskStorage({
 
 let uploadFile = multer({
     storage: storage,
-    limits: {fileSize: maxSize}
+    limits: { fileSize: maxSize }
 }).single("file")
-
-// let uploadFile = multer({
-//     dest: process.env.UPLOAD_PATH
-// }).single('file')
 
 let UploadFileMiddleware = util.promisify(uploadFile)
 
-export default  UploadFileMiddleware
+export default UploadFileMiddleware

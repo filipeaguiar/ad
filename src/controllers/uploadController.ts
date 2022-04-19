@@ -1,6 +1,7 @@
 import uploadFile from "../middlewares/uploadFile"
 import * as fs from 'fs'
 import dotenv from 'dotenv'
+import path from 'path'
 
 dotenv.config()
 export default class uploadController {
@@ -38,12 +39,33 @@ export default class uploadController {
             files.forEach((file) => {
                 fileInfos.push({
                     name: file,
-                    url: 'http://localhost:3333/' + file,
+                    url: process.env.HOST + "bpa/" + file,
                 })
             })
             res.status(200).send(fileInfos)
         })
     }
+
+    static getBPAList(req, res) {
+        const directoryPath = process.env.UPLOAD_PATH
+        fs.readdir(directoryPath, function (err, files) {
+            if (err) {
+                res.status(500).send({
+                    message: "Unable to scan files!",
+                })
+            }
+            let fileInfos = []
+            files.forEach((file) => {
+                if (path.extname(file) == '.csv') {
+                    fileInfos.push({
+                        file,
+                    })
+                }
+            })
+            res.status(200).send(fileInfos)
+        })
+    }
+
     static download(req, res) {
         const fileName = req.params.name
         const directoryPath = process.env.UPLOAD_PATH
