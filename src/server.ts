@@ -18,6 +18,7 @@ import bpaRouter from './routes/bpa'
 import uploadRouter from './routes/upload'
 import path from 'path'
 
+
 /**
  * Carrega as variáveis de ambiente do arquivo .env para process.env
  */
@@ -29,9 +30,10 @@ const app = Express()
 // configura os middlewares 
 app.use(cors())
 app.use(Express.json())
+app.use('/', Express.static(__dirname + '/static'))
+app.use(require('connect-history-api-fallback')())
 app.locals.__basedir = path.join(__dirname, 'static')
 
-app.use('/', Express.static(__dirname + '/static'))
 
 
 // rota raiz
