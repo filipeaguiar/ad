@@ -36,12 +36,10 @@ export default class uploadController {
     static getListFiles(req, res) {
         const directoryPath = process.env.UPLOAD_PATH
         fs.readdir(directoryPath, function (err, files) {
-            if (err) {
-                res.status(200).send({
-
-                })
-            }
             let fileInfos = []
+            if (err) {
+                res.status(200).send(fileInfos)
+            }
             files.forEach((file) => {
                 fileInfos.push({
                     name: file,
