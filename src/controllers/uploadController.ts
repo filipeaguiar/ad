@@ -14,13 +14,19 @@ export default class uploadController {
         try {
             await uploadFile(req, res)
             if (req.file == undefined) {
+                console.log({ message: "Please upload a file!" })
                 return res.status(400).send({ message: "Please upload a file!" })
             }
+            console.log({
+                message: "Uploaded the file successfully: " + req.file.originalname,
+            })
             res.status(200).send({
                 message: "Uploaded the file successfully: " + req.file.originalname,
             })
         } catch (err) {
-            console.dir(req)
+            console.log({
+                message: `Could not upload the file: ${req.file.originalname}. ${err}`,
+            })
             res.status(500).send({
                 message: `Could not upload the file: ${req.file.originalname}. ${err}`,
             })
