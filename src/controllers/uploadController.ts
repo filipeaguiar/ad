@@ -31,8 +31,8 @@ export default class uploadController {
         const directoryPath = process.env.UPLOAD_PATH
         fs.readdir(directoryPath, function (err, files) {
             if (err) {
-                res.status(500).send({
-                    message: "Unable to scan files!",
+                res.status(200).send({
+
                 })
             }
             let fileInfos = []
