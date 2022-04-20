@@ -55,13 +55,15 @@ export default class uploadController {
         try {
             fs.readdir(directoryPath, function (err, files) {
                 let fileInfos = []
-                files.forEach((file) => {
-                    if (path.extname(file) == '.csv') {
-                        fileInfos.push({
-                            file,
-                        })
-                    }
-                })
+                if (files) {
+                    files.forEach((file) => {
+                        if (path.extname(file) == '.csv') {
+                            fileInfos.push({
+                                file,
+                            })
+                        }
+                    })
+                }
                 res.status(200).send(fileInfos)
             })
         } catch (err) {
