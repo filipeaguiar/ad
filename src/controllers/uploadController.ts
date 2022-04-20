@@ -52,20 +52,35 @@ export default class uploadController {
 
     static getBPAList(req, res) {
         const directoryPath = process.env.UPLOAD_PATH
-        fs.readdir(directoryPath, function (err, files) {
-            if (err) {
-                res.status(200).send([])
-            }
-            let fileInfos = []
-            files.forEach((file) => {
-                if (path.extname(file) == '.csv') {
-                    fileInfos.push({
-                        file,
-                    })
-                }
+        try {
+            fs.readdir(directoryPath, function (err, files) {
+                let fileInfos = []
+                files.forEach((file) => {
+                    if (path.extname(file) == '.csv') {
+                        fileInfos.push({
+                            file,
+                        })
+                    }
+                })
+                res.status(200).send(fileInfos)
             })
-            res.status(200).send(fileInfos)
-        })
+        } catch (err) {
+            res.status(200).send([])
+        }
+        // fs.readdir(directoryPath, function (err, files) {
+        //     if (err) {
+        //         res.status(200).send([])
+        //     }
+        //     let fileInfos = []
+        //     files.forEach((file) => {
+        //         if (path.extname(file) == '.csv') {
+        //             fileInfos.push({
+        //                 file,
+        //             })
+        //         }
+        //     })
+        //     res.status(200).send(fileInfos)
+        // })
     }
 
     static download(req, res) {
