@@ -17,7 +17,7 @@ export default class BPAProvider {
         try {
             const result = await postgresPool.pool.query(`
             SELECT
-            procedimentos.dthr_valida as Data_Procedimento,
+            to_char(procedimentos.dthr_valida, 'YYYYMMDD') as Data_Procedimento,
             procedimentos.con_numero as Num_Consulta,
             procedimentos.pac_codigo,
             servidores_CNS.valor as CNS,
@@ -29,7 +29,7 @@ export default class BPAProvider {
             pacientes.nro_cartao_saude as Paciente_Cartao_SUS,
             Pacientes.NOME as Paciente_Nome,
             Pacientes.SEXO_BIOLOGICO as Paciente_Sexo_Biologico,
-            Pacientes.DT_NASCIMENTO as Paciente_Data_Nascimento,
+            to_char(Pacientes.DT_NASCIMENTO, 'YYYYMMDD') as Paciente_Data_Nascimento,
             Pacientes.NAC_CODIGO as Paciente_Nacionalidade,
             Pacientes.COR as Paciente_Cor,
             Pacientes_Endereco.BCL_CLO_CEP as Paciente_CEP,

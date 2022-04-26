@@ -34,7 +34,7 @@ export default class uploadController {
     }
 
     static getListFiles(req, res) {
-        const directoryPath = process.env.UPLOAD_PATH
+        const directoryPath = req.app.locals.__basedir + '/bpa'
         fs.readdir(directoryPath, function (err, files) {
             let fileInfos = []
             if (err) {
@@ -51,7 +51,7 @@ export default class uploadController {
     }
 
     static getBPAList(req, res) {
-        const directoryPath = process.env.UPLOAD_PATH
+        const directoryPath = req.app.locals.__basedir + '/bpa'
         try {
             fs.readdir(directoryPath, function (err, files) {
                 let fileInfos = []
@@ -69,25 +69,11 @@ export default class uploadController {
         } catch (err) {
             res.status(200).send([])
         }
-        // fs.readdir(directoryPath, function (err, files) {
-        //     if (err) {
-        //         res.status(200).send([])
-        //     }
-        //     let fileInfos = []
-        //     files.forEach((file) => {
-        //         if (path.extname(file) == '.csv') {
-        //             fileInfos.push({
-        //                 file,
-        //             })
-        //         }
-        //     })
-        //     res.status(200).send(fileInfos)
-        // })
     }
 
     static download(req, res) {
         const fileName = req.params.name
-        const directoryPath = process.env.UPLOAD_PATH
+        const directoryPath = req.app.locals.__basedir + '/bpa'
         res.download(directoryPath + fileName, fileName, (err) => {
             if (err) {
                 res.status(500).send({

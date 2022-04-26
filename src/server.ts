@@ -31,17 +31,7 @@ const app = Express()
 app.use(cors())
 app.use(Express.json())
 app.use('/', Express.static(__dirname + '/static'))
-app.use(require('connect-history-api-fallback')())
 app.locals.__basedir = path.join(__dirname, 'static')
-
-
-
-// rota raiz
-//app.get('/', (req, res) => {
-//    res.json({
-//        msg: "Server Running"
-//    })
-//})
 
 // routes
 app.use('/users/login', activeDirectoryAuthMiddleware.authenticateUser)
@@ -51,5 +41,6 @@ app.use('/material', materialRouter)
 app.use('/bpa', bpaRouter)
 app.use('/file', uploadRouter)
 app.use(Express.urlencoded({ extended: true }))
+app.use(require('connect-history-api-fallback')())
 // inicia a aplicação ouvindo na porta definida
-app.listen(process.env.PORT || 3000)
+app.listen(process.env.PORT || 3000, () => { console.log("Express Listening on port: " + process.env.PORT || 3000) })
