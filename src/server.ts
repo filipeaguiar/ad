@@ -42,5 +42,6 @@ app.use('/bpa', bpaRouter)
 app.use('/file', uploadRouter)
 app.use(Express.urlencoded({ extended: true }))
 app.use(require('connect-history-api-fallback')())
+app.get('*', (req, res) => res.redirect('/'))
 // inicia a aplicação ouvindo na porta definida
 app.listen(process.env.PORT || 3000, () => { console.log("Express Listening on port: " + process.env.PORT || 3000) })
