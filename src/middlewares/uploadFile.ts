@@ -1,12 +1,11 @@
 import util from 'util'
 import multer from 'multer'
-import dotenv from 'dotenv'
 
-dotenv.config()
 const maxSize = 2 * 1024 * 1024
 let storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, process.env.UPLOAD_PATH)
+        console.log(req.app.locals.__basedir)
+        cb(null, req.app.locals.__basedir + '/bpa')
     },
     filename: (req, file, cb) => {
         cb(null, file.originalname)
