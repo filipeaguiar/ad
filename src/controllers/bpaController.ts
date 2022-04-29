@@ -3,12 +3,56 @@ import BPAProvider from '../providers/BPAProvider'
 import fs from 'fs'
 import { parse } from 'csv'
 
-// const BPAcFile = (array: Array<Object>) => {
-//     array.forEach((item, linha) => {
-//         console.log(`O conteúdo da linha ${linha} é:`)
-//         console.log(item)
-//     })
-// }
+// Create a fuction that returns a list of values of a key in a array of objects
+const uniqueBy = (key, array) => {
+    const procedimentos = []
+    array.forEach(item => {
+        if (!procedimentos.includes(item[key])) {
+            procedimentos.push(item[key])
+        }
+    }
+    )
+    // return unique values of procedimentos
+    const onlyUnique = (value, index, self) => {
+        return self.indexOf(value) === index
+    }
+    return procedimentos.filter(onlyUnique)
+}
+
+// Create a function that sums all values of a value of an array of objects
+const sumBy = (key, array) => {
+    return array.reduce((acc, curr) => {
+        return acc + parseInt(curr[key])
+    }, 0)
+}
+
+const generateHeader = (competencia, linhas, paginas, validation) => {
+    let header = ''
+    header += `01#BPA#${competencia}${linhas}${paginas}${validation}`
+    header += 'UFPE - HOSPITAL DAS CLÍNICAS        24134488000299UFPE - HOSPITAL DAS CLÍNICAS            ED01.03\r\n'
+    return header
+}
+
+const generateValidation = (
+    bpacSumProcedimentos: number,
+    bpacTotalProcedimentos: number,
+    bpaiSumProcedimentos: number,
+    bpaiTotalProcedimentos: number) => {
+    // log all function parameters
+    // console.log('bpacSumProcedimentos', bpacSumProcedimentos)
+    // console.log('bpacTotalProcedimentos', bpacTotalProcedimentos)
+    // console.log('bpaiSumProcedimentos', bpaiSumProcedimentos)
+    // console.log('bpaiTotalProcedimentos', bpaiTotalProcedimentos)
+
+    const validation = Math.floor((
+        bpacSumProcedimentos +
+        bpacTotalProcedimentos +
+        bpaiSumProcedimentos +
+        bpaiTotalProcedimentos
+    ) % 1111) + 1111
+    return validation
+}
+
 
 const BPAiMagnetico = async function (mesAno: String, file: any) {
     const parser = parse({
@@ -19,9 +63,6 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
     var arrayData = []
     var pageNumber = 1
     var lineNumber = 0
-    var sumOfProcedimentos = 0
-    var sumOfQuantidade = 0
-    var totalLineNumber = 0
 
     return new Promise((resolve, reject) => {
         fs.createReadStream(file)
@@ -33,55 +74,92 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                     lineNumber = 1
                     pageNumber++
                 }
-                totalLineNumber++
-                sumOfProcedimentos += row[1]
                 arrayData.push(row)
+                // Linha de Produção
                 data += '03'
+                // CNES
                 data += '0000396'
+                // Competência
                 data += mesAno
+                // CNS Profissional
                 data += row[3].toString().padStart(15, '0')
+                // CBO Profissional
                 data += row[5].toString().padStart(6, '0')
+                // Data de Atendimento
                 data += row[0]
+                // Folha BPA
                 data += pageNumber.toString().padStart(3, '0')
+                // Linha na Folha do BPA
                 data += lineNumber.toString().padStart(2, '0')
+                // Código do Procedimento
                 data += row[14]?.toString().padStart(10, '0')
+                // CNS do Paciente
                 data += row[6].toString().padStart(15, '0')
+                // Sexo do Paciente
                 data += row[8].padStart(1, ' ')
+                // COd IBGE do Município
                 data += ''.padStart(6, ' ')
+                // CID-10
                 data += ''.padStart(4, ' ')
+                // Idade
                 data += ''.padStart(3, ' ')
-                data += row[13]?.toString().padStart(3, '0')
+                // Quantidade de Procedimentos
+                data += row[13]?.toString().padStart(6, '0')
+                // Caráter de Atendimento
                 data += ''.padStart(2, ' ')
+                // Autorização do Estabelecimento
                 data += ''.padStart(13, ' ')
+                // Origem das informações
                 data += 'BPA'
+                // Nome do Paciente
                 data += row[7]?.substring(0, 30).padEnd(30, ' ')
-                data += row[9]
+                // Data de Nascimento do Paciente
+                data += row[9]?.toString().padStart(8, ' ')
+                // Raça/Cor
                 data += ''.padEnd(2, ' ')
+                // Etnia
                 data += ''.padEnd(4, ' ')
+                // Nacionalidade
                 data += row[10].toString().padStart(3, '0')
+                // Código do Serviço
                 data += ''.padStart(3, ' ')
+                // Código de classificação
                 data += ''.padStart(3, ' ')
+                // Sequência de Equipe
                 data += ''.padStart(8, ' ')
+                // Área da Equipe
                 data += ''.padStart(4, ' ')
+                // CNPJ 
                 data += ''.padStart(14, ' ')
+                // CEP Paciente
                 data += row[12]?.toString().padStart(8, ' ')
+                // Cod Logradouro Paciente
                 data += ''.padStart(3, ' ')
+                // Endereço do Paciente
                 data += ''.padStart(30, ' ')
+                // Complemento do Endereço do Paciente
                 data += ''.padStart(10, ' ')
+                // Número do Endereço
                 data += ''.padStart(5, ' ')
+                // Bairro do Endereço
                 data += ''.padStart(30, ' ')
+                // Telefone do Paciente
                 data += ''.padStart(11, ' ')
+                // Email do Paciente
                 data += ''.padStart(40, ' ')
+                // Identificação Nacional de Equipes
                 data += ''.padStart(10, ' ')
+                // Fim da linha
                 data += '\r\n'
 
             })
             .on('end', () => {
                 resolve({
                     arrayData,
-                    sumOfProcedimentos,
-                    linhas: totalLineNumber,
-                    pageNumber,
+                    somaProcedimentos: sumBy(14, arrayData),
+                    totalProcedimentos: sumBy(13, arrayData),
+                    totalPaginas: pageNumber,
+                    totalLinhas: lineNumber,
                     data
                 })
             })
@@ -98,8 +176,6 @@ const BPAcMagnetico = async function (mesAno: String, file: any) {
     var pageNumber = 1
     var lineNumber = 0
     var sumOfProcedimentos = 0
-    var sumOfQuantidade = 0
-    var totalLineNumber = 0
     return new Promise((resolve, reject) => {
         fs.createReadStream(file)
             .pipe(parser)
@@ -110,7 +186,6 @@ const BPAcMagnetico = async function (mesAno: String, file: any) {
                     lineNumber = 1
                     pageNumber++
                 }
-                totalLineNumber++
                 sumOfProcedimentos += row[1]
                 arrayData.push(row)
                 // Linha BPAC
@@ -130,11 +205,11 @@ const BPAcMagnetico = async function (mesAno: String, file: any) {
             .on('end', () => {
                 const somatorio = [...new Set(arrayData.map(x => x.procedimento))].reduce((anterior, atual) => parseInt(anterior) + parseInt(atual), 0)
                 resolve({
-                    somatorio,
                     arrayData,
-                    sumOfProcedimentos,
-                    linhas: totalLineNumber,
-                    pageNumber,
+                    somaProcedimentos: sumBy(3, arrayData),
+                    totalProcedimentos: sumBy(2, arrayData),
+                    totalPaginas: pageNumber,
+                    totalLinhas: lineNumber,
                     data
                 })
             })
@@ -169,10 +244,22 @@ export default class bpaController {
     }
 
     static async getBPAMagnetico(req: Request, res: Response, next) {
-        const bpacFile = `${req.app.locals.__basedir}/bpa/${req.params.mesAno.substring(0, 4)}-${req.params.mesAno.substring(4, 6)}-BPAc.csv`
-        const bpaiFile = `${req.app.locals.__basedir}/bpa/${req.params.mesAno.substring(0, 4)}-${req.params.mesAno.substring(4, 6)}-BPAi.csv`
+        const competencia = req.params.mesAno.substring(0, 4) + '-' + req.params.mesAno.substring(4, 6)
+        const bpacFile = `${req.app.locals.__basedir}/bpa/${competencia}-BPAc.csv`
+        const bpaiFile = `${req.app.locals.__basedir}/bpa/${competencia}-BPAi.csv`
         const bpac: any = await BPAcMagnetico(req.params.mesAno, bpacFile)
         const bpai: any = await BPAiMagnetico(req.params.mesAno, bpaiFile)
-        res.send(bpac.data + bpai.data)
+        const validation = generateValidation(
+            bpac.somaProcedimentos,
+            bpac.totalProcedimentos,
+            bpai.somaProcedimentos,
+            bpai.totalProcedimentos
+        )
+        const totalPaginas = parseInt(bpac.totalPaginas) + parseInt(bpai.totalPaginas)
+        const totalLinhas = parseInt(bpac.totalLinhas) + parseInt(bpai.totalLinhas)
+
+        const header = generateHeader(req.params.mesAno, totalLinhas, totalPaginas, validation)
+
+        res.send(header + bpac.data + bpai.data)
     }
 }

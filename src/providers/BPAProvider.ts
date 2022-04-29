@@ -75,10 +75,8 @@ export default class BPAProvider {
                         WHERE cod_registro = '01')
                 AND faturamento_registros.cod_registro = '02'
             `)
-            console.log(Math.ceil(result.rows.length / 99))
             return (result.rows)
         } catch (err) {
-            console.error(err.message)
             return (err.message)
         }
     }
@@ -196,10 +194,8 @@ export default class BPAProvider {
                 group by 1, 2, 4)
                 order by 4 desc, 3 desc, 1 asc                
             `)
-            console.log(Math.ceil(result.rows.length / 99))
             return (result.rows)
         } catch (err) {
-            console.error(err.message)
             return (err.message)
         }
     }
