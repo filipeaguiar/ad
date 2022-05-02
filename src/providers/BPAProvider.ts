@@ -168,6 +168,7 @@ export default class BPAProvider {
                 and ret.descricao <> 'PROFISSIONAL FALTOU'
                 and ret.descricao <> 'EM ATENDIMENTO'
                 and ret.descricao <> 'PACIENTE DESISTIU CONS'
+                and consultas.pac_codigo <> 1000001
                 group by 1, 2, 4)
                 UNION
                 (SELECT
@@ -191,6 +192,7 @@ export default class BPAProvider {
                 AND procedimentos.cbo IS NOT NULL
                 AND procedimentos.phi_seq IS NOT NULL
                 AND faturamento_registros.cod_registro = '01'
+
                 group by 1, 2, 4)
                 order by 4 desc, 3 desc, 1 asc                
             `)
