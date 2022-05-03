@@ -3,29 +3,26 @@ import BPAProvider from '../providers/BPAProvider'
 import fs from 'fs'
 import { parse } from 'csv'
 
-// Create a fuction that returns a list of values of a key in a array of objects
-const uniqueBy = (key, array) => {
-    const procedimentos = []
-    array.forEach(item => {
-        if (!procedimentos.includes(item[key])) {
-            procedimentos.push(item[key])
-        }
-    }
-    )
-    // return unique values of procedimentos
-    const onlyUnique = (value, index, self) => {
-        return self.indexOf(value) === index
-    }
-    return procedimentos.filter(onlyUnique)
-}
-
-// Create a function that sums all values of a value of an array of objects
+/**
+ * 
+ * @param key Chave do array cujos valores devem ser somados
+ * @param array Array de objetos
+ * @returns soma dos valores
+ */
 const sumBy = (key, array) => {
     return array.reduce((acc, curr) => {
         return acc + parseInt(curr[key])
     }, 0)
 }
 
+/**
+ * 
+ * @param competencia Competência a ser gerada
+ * @param linhas Linhas do arquivo
+ * @param paginas numero de paginas
+ * @param validation código de validação
+ * @returns cabeçalho do arquivo
+ */
 const generateHeader = (competencia, linhas, paginas, validation) => {
     let header = ''
     header += `01#BPA#${competencia}${linhas}${paginas}${validation}`
@@ -33,16 +30,19 @@ const generateHeader = (competencia, linhas, paginas, validation) => {
     return header
 }
 
+/**
+ * 
+ * @param bpacSumProcedimentos Soma dos códigos procedimentos
+ * @param bpacTotalProcedimentos Total de Procedimentos realizados
+ * @param bpaiSumProcedimentos Soma dos códigos dos procedimentos
+ * @param bpaiTotalProcedimentos Total de Procedimentos Realizados
+ * @returns código de validação do arquivo
+ */
 const generateValidation = (
     bpacSumProcedimentos: number,
     bpacTotalProcedimentos: number,
     bpaiSumProcedimentos: number,
     bpaiTotalProcedimentos: number) => {
-    // log all function parameters
-    // console.log('bpacSumProcedimentos', bpacSumProcedimentos)
-    // console.log('bpacTotalProcedimentos', bpacTotalProcedimentos)
-    // console.log('bpaiSumProcedimentos', bpaiSumProcedimentos)
-    // console.log('bpaiTotalProcedimentos', bpaiTotalProcedimentos)
 
     const validation = Math.floor((
         bpacSumProcedimentos +
@@ -53,7 +53,12 @@ const generateValidation = (
     return validation
 }
 
-
+/**
+ * 
+ * @param mesAno Mes e Ano da competência
+ * @param file Caminho do arquivo
+ * @returns Objeto com os dados do arquivo formatados
+ */
 const BPAiMagnetico = async function (mesAno: String, file: any) {
     const parser = parse({
         delimiter: ';',
@@ -66,6 +71,16 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
 
     return new Promise((resolve, reject) => {
         fs.createReadStream(file)
+            .on('error', (err) => {
+                resolve({
+                    arrayData: [],
+                    somaProcedimentos: 0,
+                    totalProcedimentos: 0,
+                    totalPaginas: 0,
+                    totalLinhas: 0,
+                    data: ''
+                })
+            })
             .pipe(parser)
             .on('data', (row) => {
                 if (lineNumber < 99) {
@@ -166,6 +181,12 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
     })
 }
 
+/**
+ * 
+ * @param mesAno Mes e Ano da competência
+ * @param file Caminho do arquivo
+ * @returns Objeto com os dados do arquivo formatados
+ */
 const BPAcMagnetico = async function (mesAno: String, file: any) {
     const parser = parse({
         delimiter: ';',
@@ -178,6 +199,16 @@ const BPAcMagnetico = async function (mesAno: String, file: any) {
     var sumOfProcedimentos = 0
     return new Promise((resolve, reject) => {
         fs.createReadStream(file)
+            .on('error', (err) => {
+                resolve({
+                    arrayData: [],
+                    somaProcedimentos: 0,
+                    totalProcedimentos: 0,
+                    totalPaginas: 0,
+                    totalLinhas: 0,
+                    data: ''
+                })
+            })
             .pipe(parser)
             .on('data', (row) => {
                 if (lineNumber < 20) {

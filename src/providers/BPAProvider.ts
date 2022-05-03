@@ -32,7 +32,7 @@ export default class BPAProvider {
             to_char(Pacientes.DT_NASCIMENTO, 'YYYYMMDD') as Paciente_Data_Nascimento,
             Pacientes.NAC_CODIGO as Paciente_Nacionalidade,
             Pacientes.COR as Paciente_Cor,
-            Pacientes_Endereco.BCL_CLO_CEP as Paciente_CEP,
+            Pacientes_Endereco.cep as Paciente_CEP,
             procedimentos.quantidade as Procedimento_Quantidade,
             faturamento_procedimentos.cod_tabela as procedimento_sus
 
