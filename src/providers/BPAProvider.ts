@@ -33,9 +33,9 @@ export default class BPAProvider {
             Pacientes.NAC_CODIGO as Paciente_Nacionalidade,
             Pacientes.COR as Paciente_Cor,
             CASE
-                WHEN Pacientes_Endereco.cep as Paciente_CEP is NULL THEN Pacientes_Endereco.blc_clo_cep
+                WHEN Pacientes_Endereco.cep is NULL THEN Pacientes_Endereco.bcl_clo_cep
                 ELSE Pacientes_Endereco.cep
-            END as CEP
+            END as CEP,
             procedimentos.quantidade as Procedimento_Quantidade,
             faturamento_procedimentos.cod_tabela as procedimento_sus
 
