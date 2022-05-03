@@ -32,7 +32,10 @@ export default class BPAProvider {
             to_char(Pacientes.DT_NASCIMENTO, 'YYYYMMDD') as Paciente_Data_Nascimento,
             Pacientes.NAC_CODIGO as Paciente_Nacionalidade,
             Pacientes.COR as Paciente_Cor,
-            Pacientes_Endereco.cep as Paciente_CEP,
+            CASE
+                WHEN Pacientes_Endereco.cep as Paciente_CEP is NULL THEN Pacientes_Endereco.blc_clo_cep
+                ELSE Pacientes_Endereco.cep
+            END as CEP
             procedimentos.quantidade as Procedimento_Quantidade,
             faturamento_procedimentos.cod_tabela as procedimento_sus
 
@@ -62,7 +65,9 @@ export default class BPAProvider {
                 AND servidores_CBO2.tii_seq = 3	
             LEFT OUTER JOIN agh.rap_pessoas_fisicas as servidores_info
                 on servidores_info.codigo = servidores.pes_codigo
-            LEFT OUTER JOIN AGH.AIP_ENDERECOS_PACIENTES Pacientes_Endereco on Pacientes.CODIGO = Pacientes_Endereco.PAC_CODIGO
+            LEFT OUTER JOIN AGH.AIP_ENDERECOS_PACIENTES Pacientes_Endereco 
+                ON Pacientes.CODIGO = Pacientes_Endereco.PAC_CODIGO
+                AND Pacientes_Endereco.tipo_endereco = 'R'
             LEFT OUTER JOIN agh.aac_consultas as consultas
                 ON consultas.numero = procedimentos.con_numero
             WHERE 
