@@ -107,19 +107,19 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                 // Linha na Folha do BPA
                 data += lineNumber.toString().padStart(2, '0')
                 // Código do Procedimento
-                data += row[14]?.toString().padStart(10, '0')
+                data += row[17]?.toString().padStart(10, '0')
                 // CNS do Paciente
                 data += row[6].toString().padStart(15, '0')
                 // Sexo do Paciente
                 data += row[8].padStart(1, ' ')
-                // COd IBGE do Município
-                data += ''.padStart(6, ' ')
+                // COD IBGE do Município
+                data += row[11].toString().padStart(6, '+').substring(0, 6)
                 // CID-10
-                data += ''.padStart(4, ' ')
+                data += row[15].padEnd(4, ' ')
                 // Idade
                 data += ''.padStart(3, ' ')
                 // Quantidade de Procedimentos
-                data += row[13]?.toString().padStart(6, '0')
+                data += row[16].toString().padStart(6, '0')
                 // Caráter de Atendimento
                 data += ''.padStart(2, ' ')
                 // Autorização do Estabelecimento
@@ -147,9 +147,9 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                 // CNPJ 
                 data += ''.padStart(14, ' ')
                 // CEP Paciente
-                data += row[12]?.toString().padStart(8, ' ')
+                data += row[13]?.toString().padStart(8, ' ')
                 // Cod Logradouro Paciente
-                data += ''.padStart(3, ' ')
+                data += row[14].toString().padStart(3, '0')
                 // Endereço do Paciente
                 data += ''.padStart(30, ' ')
                 // Complemento do Endereço do Paciente

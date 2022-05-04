@@ -31,11 +31,17 @@ export default class BPAProvider {
             Pacientes.SEXO_BIOLOGICO as Paciente_Sexo_Biologico,
             to_char(Pacientes.DT_NASCIMENTO, 'YYYYMMDD') as Paciente_Data_Nascimento,
             Pacientes.NAC_CODIGO as Paciente_Nacionalidade,
+            CASE 
+                WHEN Cidades.cod_ibge is NULL THEN Cidades2.cod_ibge
+                ELSE Cidades.cod_ibge
+            END as Cidade,
             Pacientes.COR as Paciente_Cor,
             CASE
                 WHEN Pacientes_Endereco.cep is NULL THEN Pacientes_Endereco.bcl_clo_cep
                 ELSE Pacientes_Endereco.cep
             END as CEP,
+            Tipo_Logradouros.codigo_base_sus as Cod_Logradouro,
+            replace(CID.codigo, '.', '') as CID,
             procedimentos.quantidade as Procedimento_Quantidade,
             faturamento_procedimentos.cod_tabela as procedimento_sus
 
@@ -70,6 +76,18 @@ export default class BPAProvider {
                 AND Pacientes_Endereco.tipo_endereco = 'R'
             LEFT OUTER JOIN agh.aac_consultas as consultas
                 ON consultas.numero = procedimentos.con_numero
+            LEFT OUTER JOIN agh.aip_cidades as Cidades
+                ON Pacientes_Endereco.cdd_codigo = Cidades.codigo
+            LEFT OUTER JOIN agh.aip_cep_logradouros as CEP
+                ON CEP.cep = Pacientes_Endereco.bcl_clo_cep
+            LEFT OUTER JOIN agh.aip_logradouros as Logradouros
+                ON Logradouros.codigo = CEP.lgr_codigo
+            LEFT OUTER JOIN agh.aip_cidades as Cidades2
+                ON Cidades2.codigo = Logradouros.cdd_codigo
+            LEFT OUTER JOIN agh.aip_tipo_logradouros as Tipo_Logradouros
+                ON Tipo_Logradouros.codigo = Logradouros.tlg_codigo
+            LEFT OUTER JOIN agh.agh_cids as CID
+                ON CID.seq = procedimentos.cid_seq
             WHERE 
                 procedimentos.dthr_valida BETWEEN '${startDate} 00:00:00' and '${endDate} 23:59:59.999999'
                 AND consultas.ret_seq = 10
