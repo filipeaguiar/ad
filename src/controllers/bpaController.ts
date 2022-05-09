@@ -25,7 +25,7 @@ const sumBy = (key, array) => {
  */
 const generateHeader = (competencia, linhas, paginas, validation) => {
     let header = ''
-    header += `01#BPA#${competencia}${linhas}${paginas}${validation}`
+    header += `01#BPA#${competencia}${linhas.toString().padStart(6, '0')}${paginas.toString().padStart(6, '0')}${validation}`
     header += 'UFPE - HOSPITAL DAS CLÍNICAS        24134488000299UFPE - HOSPITAL DAS CLÍNICAS            ED01.03\r\n'
     return header
 }
@@ -50,6 +50,11 @@ const generateValidation = (
         bpaiSumProcedimentos +
         bpaiTotalProcedimentos
     ) % 1111) + 1111
+    // log all params to console
+    console.log('bpacSumProcedimentos', bpacSumProcedimentos)
+    console.log('bpacTotalProcedimentos', bpacTotalProcedimentos)
+    console.log('bpaiSumProcedimentos', bpaiSumProcedimentos)
+    console.log('bpaiTotalProcedimentos', bpaiTotalProcedimentos)
     return validation
 }
 
@@ -68,7 +73,7 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
     var arrayData = []
     var pageNumber = 1
     var lineNumber = 0
-
+    var totalLinhas = 0
     return new Promise((resolve, reject) => {
         fs.createReadStream(file)
             .on('error', (err) => {
@@ -89,6 +94,7 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                     lineNumber = 1
                     pageNumber++
                 }
+                totalLinhas++
                 arrayData.push(row)
                 // Linha de Produção
                 data += '03'
@@ -171,10 +177,10 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
             .on('end', () => {
                 resolve({
                     arrayData,
-                    somaProcedimentos: sumBy(14, arrayData),
-                    totalProcedimentos: sumBy(13, arrayData),
+                    somaProcedimentos: sumBy(17, arrayData),
+                    totalProcedimentos: sumBy(16, arrayData),
                     totalPaginas: pageNumber,
-                    totalLinhas: lineNumber,
+                    totalLinhas: totalLinhas,
                     data
                 })
             })
@@ -197,6 +203,7 @@ const BPAcMagnetico = async function (mesAno: String, file: any) {
     var pageNumber = 1
     var lineNumber = 0
     var sumOfProcedimentos = 0
+    var totalLinhas = 0
     return new Promise((resolve, reject) => {
         fs.createReadStream(file)
             .on('error', (err) => {
@@ -240,7 +247,7 @@ const BPAcMagnetico = async function (mesAno: String, file: any) {
                     somaProcedimentos: sumBy(3, arrayData),
                     totalProcedimentos: sumBy(2, arrayData),
                     totalPaginas: pageNumber,
-                    totalLinhas: lineNumber,
+                    totalLinhas: totalLinhas,
                     data
                 })
             })
