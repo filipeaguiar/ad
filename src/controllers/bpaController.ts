@@ -255,21 +255,21 @@ const BPAcMagnetico = async function (mesAno: String, file: any) {
 }
 
 export default class bpaController {
-    /**
-     * 
-     * @param req Objeto Request do ExpressJS
-     * @param res Objeto Response do ExpressJS
-     * @param next Objeto que representa o próximo middleware a ser executado
-     */
-    static async getBPA(req: Request, res: Response, next) {
-        const { start, end, atendimento } = req.query
-        if (!start || !end) {
-            res.send(await BPAProvider.getBPA(atendimento))
-        }
-        else {
-            res.send(await BPAProvider.getBPAiByPeriod(start, end))
-        }
-    }
+    // /**
+    //  * 
+    //  * @param req Objeto Request do ExpressJS
+    //  * @param res Objeto Response do ExpressJS
+    //  * @param next Objeto que representa o próximo middleware a ser executado
+    //  */
+    // static async getBPA(req: Request, res: Response, next) {
+    //     const { start, end, atendimento } = req.query
+    //     if (!start || !end) {
+    //         res.send(await BPAProvider.getBPA(atendimento))
+    //     }
+    //     else {
+    //         res.send(await BPAProvider.getBPAiByPeriod(start, end))
+    //     }
+    // }
 
     static async getBPAc(req: Request, res: Response, next) {
         const BPAc = await BPAProvider.getBPAc(req.params.mesAno)
