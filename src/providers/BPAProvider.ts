@@ -223,7 +223,7 @@ export default class BPAProvider {
                 AND procedimentos.pac_codigo <> 1000001
                 AND cbos.codigo IS NOT NULL
                 group by 1, 2, 4)
-                order by 4 desc, 3 desc, 1 asc                
+                order by 1 asc, 2 asc,3 asc
             `)
             return (result.rows)
         } catch (err) {
