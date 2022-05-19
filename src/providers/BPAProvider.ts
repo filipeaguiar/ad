@@ -132,10 +132,10 @@ export default class BPAProvider {
                 -- Para os demais, aplicar procedimento 03.01.01.004-8
 
                 CASE
-                    WHEN (servidores_informacoes_cbo2.valor like '2231%') or (servidores_informacoes_cbo.valor like '2231%') THEN 0301010072
-                    WHEN (servidores_informacoes_cbo2.valor like '2251%') or (servidores_informacoes_cbo.valor like '2251%') THEN 0301010072
-                    WHEN (servidores_informacoes_cbo2.valor like '2252%') or (servidores_informacoes_cbo.valor like '2252%') THEN 0301010072
-                    WHEN (servidores_informacoes_cbo2.valor like '2253%') or (servidores_informacoes_cbo.valor like '2253%') THEN 0301010072
+                    WHEN servidores_informacoes_cbo.valor like '2231%' THEN 0301010072
+                    WHEN servidores_informacoes_cbo.valor like '2251%' THEN 0301010072
+                    WHEN servidores_informacoes_cbo.valor like '2252%' THEN 0301010072
+                    WHEN servidores_informacoes_cbo.valor like '2253%' THEN 0301010072
                     ELSE 0301010048
                 END as procedimento_sus
                 -------------------------------------------------------------------
