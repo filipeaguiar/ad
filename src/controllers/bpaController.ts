@@ -103,7 +103,7 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                 // Competência
                 data += mesAno
                 // CNS Profissional
-                data += row[3].toString().padStart(15, '0')
+                data += row[3].toString().padStart(15, ' ')
                 // CBO Profissional
                 data += row[5].toString().padStart(6, '0')
                 // Data de Atendimento
@@ -115,7 +115,7 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                 // Código do Procedimento
                 data += row[17]?.toString().padStart(10, '0')
                 // CNS do Paciente
-                data += row[6].toString().padStart(15, '0')
+                data += row[6].toString().padStart(15, ' ')
                 // Sexo do Paciente
                 data += row[8].padStart(1, ' ')
                 // COD IBGE do Município
