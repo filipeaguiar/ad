@@ -16,7 +16,9 @@ import rmaRouter from './routes/rma'
 import materialRouter from './routes/material'
 import bpaRouter from './routes/bpa'
 import uploadRouter from './routes/upload'
+import internacaoRouter from './routes/internacao'
 import path from 'path'
+import procedimentosRouter from './routes/procedimentos'
 
 
 /**
@@ -40,6 +42,8 @@ app.use('/users', userRouter)
 app.use('/material', materialRouter)
 app.use('/bpa', bpaRouter)
 app.use('/file', uploadRouter)
+app.use('/api/internacao', internacaoRouter)
+app.use('/api/procedimentos', procedimentosRouter)
 app.use(Express.urlencoded({ extended: true }))
 app.use(require('connect-history-api-fallback')())
 app.get('*', (req, res) => res.redirect('/'))
