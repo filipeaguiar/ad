@@ -3,6 +3,6 @@ import relatorioConsultasController from "../controllers/relatorioConsultasContr
 
 const relatorioConsultasRouter = Router()
 
-relatorioConsultasRouter.get('/', relatorioConsultasController.getRelatorioConsultas)
+relatorioConsultasRouter.get('/:mesAno', relatorioConsultasController.getRelatorioConsultas)
 
 export default relatorioConsultasRouter
