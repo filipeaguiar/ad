@@ -19,6 +19,7 @@ import uploadRouter from './routes/upload'
 import internacaoRouter from './routes/internacao'
 import path from 'path'
 import procedimentosRouter from './routes/procedimentos'
+import relatorioConsultasRouter from './routes/relatorioConsultas'
 
 
 /**
@@ -44,6 +45,7 @@ app.use('/api/bpa', bpaRouter)
 app.use('/api/file', uploadRouter)
 app.use('/api/internacao', internacaoRouter)
 app.use('/api/procedimentos', procedimentosRouter)
+app.use('/api/relatorioconsultas', relatorioConsultasRouter)
 app.use(Express.urlencoded({ extended: true }))
 app.use(require('connect-history-api-fallback')())
 app.get('*', (req, res) => res.redirect('/'))

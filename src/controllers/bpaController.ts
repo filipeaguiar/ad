@@ -9,7 +9,7 @@ import { parse } from 'csv'
  * @param array Array de objetos
  * @returns soma dos valores
  */
-const sumBy = (key, array) => {
+const sumBy = (key: number, array: any) => {
     return array.reduce((acc, curr) => {
         return acc + parseInt(curr[key])
     }, 0)
