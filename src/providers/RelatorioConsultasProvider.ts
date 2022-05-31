@@ -6,7 +6,7 @@ export default class RelatorioConsultasProvider {
   static async getRelatorioConsultas(mesAno: string): Promise<any> {
     const { startDate, endDate } = SQLHelper.generateDates(mesAno)
     const file = path.join(__dirname, 'SQL/relatorio_consultas.sql')
-    const SQL = await SQLHelper.runQuery(file, { startDate, endDate })
+    const SQL = await SQLHelper.createQuery(file, { startDate, endDate })
 
     try {
       const result = await db.pool.query(SQL)

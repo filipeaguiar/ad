@@ -1,8 +1,8 @@
 import fs from 'fs'
 
-const runQuery = async (filename: string, args?: Object) => {
+const createQuery = async (filename: string, args?: Object) => {
   let query = await (await fs.promises.readFile(filename)).toString()
-  if ( typeof args !== 'undefined' ) {
+  if (typeof args !== 'undefined') {
     Object.entries(args).forEach(([key, value]) => {
       const keyString = `#${key}`
       const pattern = RegExp(keyString, 'g')
@@ -25,6 +25,6 @@ const generateDates = (anoMes) => {
 }
 
 export default class SQLHelper {
-  static runQuery = runQuery
+  static createQuery = createQuery
   static generateDates = generateDates
 }
