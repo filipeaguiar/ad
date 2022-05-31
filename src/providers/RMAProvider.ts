@@ -1,4 +1,4 @@
-import postgresPool from "../resources/postgres"
+import db from "../resources/postgres"
 
 export default class RMAProvider {
     /**
@@ -9,7 +9,7 @@ export default class RMAProvider {
 
     static async getRMAByPeriod(start, end): Promise<any> {
         try {
-            const result = await postgresPool.pool.query(`
+            const result = await db.pool.query(`
             SELECT 
             dfe.numero AS "nro_nf",
             dfe.tipo as tipo_nota,
@@ -36,10 +36,10 @@ export default class RMAProvider {
             ORDER BY
             dfe.dt_entrada, dfe.numero;
             `)
-            return(result.rows)
+            return (result.rows)
         } catch (err) {
             console.error(err.message)
-            return(err.message)
+            return (err.message)
         }
     }
 
@@ -48,7 +48,7 @@ export default class RMAProvider {
      */
     static async getRMA() {
         try {
-            const result = await postgresPool.pool.query(`
+            const result = await db.pool.query(`
             SELECT 
             dfe.numero AS "nro_nf",
             dfe.tipo as tipo_nota,
@@ -75,10 +75,10 @@ export default class RMAProvider {
             ORDER BY
             dfe.dt_entrada, dfe.numero;
             `)
-            return(result.rows)
+            return (result.rows)
         } catch (err) {
             console.error(err.message)
-            return(err.message)
+            return (err.message)
         }
     }
 }

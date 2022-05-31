@@ -1,29 +1,17 @@
-import postgresPool from "../resources/postgres";
+import SQLHelper from "../helpers/sqlHelper";
+import db from "../resources/postgres";
+import path from 'path'
 
 export default class InternacaoProvider {
   static async getInternacoes(): Promise<any> {
+    const file = path.join(__dirname, 'SQL/internacao.sql')
+    const SQL = await SQLHelper.runQuery(file)
+
     try {
-      const result = await postgresPool.pool.query(`
-        SELECT
-          internacoes.seq,
-          especialidades.nome_especialidade enfermaria,
-          internacoes.lto_lto_id as numero_leito,
-          internacoes.dthr_internacao as data_internacao,
-          (internacoes.dthr_alta_medica::date - internacoes.dthr_internacao::date) as tempo_ocupacao,
-          leitos.ind_acompanhamento_ccih as ccih
-        FROM agh.ain_internacoes as internacoes
-        LEFT OUTER JOIN agh.agh_especialidades as especialidades
-          ON especialidades.seq = internacoes.esp_seq
-        LEFT OUTER JOIN agh.ain_leitos as leitos
-          ON internacoes.lto_lto_id = leitos.lto_id
-        WHERE leitos.ind_situacao = 'A'
-        ORDER BY tempo_ocupacao
-      `)
+      const result = await db.pool.query(SQL)
       return result.rows
-    }
-    catch (err) {
-      console.log(err)
-      return err.message
+    } catch (error) {
+      console.log(error)
     }
   }
 }
