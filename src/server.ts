@@ -28,7 +28,7 @@ import relatorioConsultasRouter from './routes/relatorioConsultas'
 dotenv.config()
 
 // Cria a instância do Express
-const app = Express()
+const app: Express.Application = Express()
 
 // configura os middlewares 
 app.use(cors())
@@ -48,6 +48,7 @@ app.use('/api/procedimentos', procedimentosRouter)
 app.use('/api/relatorioconsultas', relatorioConsultasRouter)
 app.use(Express.urlencoded({ extended: true }))
 app.use(require('connect-history-api-fallback')())
+// Rota genérica, que redireciona todas as requisições para o /
 app.get('*', (req, res) => res.redirect('/'))
-// inicia a aplicação ouvindo na porta definida
+// Inicia a aplicação ouvindo na porta definida
 app.listen(process.env.PORT || 3000, () => { console.log("Express Listening on port: " + process.env.PORT || 3000) })

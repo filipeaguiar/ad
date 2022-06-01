@@ -9,7 +9,7 @@ import { parse } from 'csv'
  * @param array Array de objetos
  * @returns soma dos valores
  */
-const sumBy = (key: number, array: any) => {
+const sumBy = (key: number, array: Array<any>) => {
     return array.reduce((acc, curr) => {
         return acc + parseInt(curr[key])
     }, 0)
@@ -23,7 +23,7 @@ const sumBy = (key: number, array: any) => {
  * @param validation código de validação
  * @returns cabeçalho do arquivo
  */
-const generateHeader = (competencia, linhas, paginas, validation) => {
+const generateHeader = (competencia: string, linhas: number, paginas: number, validation: number) => {
     let header = ''
     header += `01#BPA#${competencia}${linhas.toString().padStart(6, '0')}${paginas.toString().padStart(6, '0')}${validation}`
     header += 'UFPE - HOSPITAL DAS CLÍNICAS        24134488000299UFPE - HOSPITAL DAS CLÍNICAS            ED01.03\r\n'
