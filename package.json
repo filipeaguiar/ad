@@ -7,7 +7,7 @@
     "dev": "nodemon src/server.ts",
     "build": "sucrase ./src -d ./dist --transforms typescript,imports",
     "instalar": "git pull && npm run build && cp .env dist/.env && npm run copy-files &&service intranet restart",
-    "copy-files": "cp ./src/providers/SQL/* ./dist/providers/SQL/*",
+    "copy-files": "cp ./src/providers/SQL/* ./dist/providers/SQL/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
