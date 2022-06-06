@@ -1,69 +1,104 @@
-SELECT
-  to_char(procedimentos.dthr_valida, 'YYYYMMDD') as Data_Procedimento,
-  procedimentos.con_numero as Num_Consulta,
-  procedimentos.pac_codigo,
-  servidores_CNS.valor as CNS,
-  servidores_info.nome as Profissional_Nome,
-  CASE
-    WHEN servidores_CBO2.valor is NULL THEN servidores_CBO1.valor
-    ELSE servidores_CBO2.valor
-  END as CBO,
-  pacientes.nro_cartao_saude as Paciente_Cartao_SUS,
-  Pacientes.NOME as Paciente_Nome,
-  Pacientes.SEXO_BIOLOGICO as Paciente_Sexo_Biologico,
-  to_char(Pacientes.DT_NASCIMENTO, 'YYYYMMDD') as Paciente_Data_Nascimento,
-  Pacientes.NAC_CODIGO as Paciente_Nacionalidade,
-  CASE
-    WHEN Cidades.cod_ibge is NULL THEN Cidades2.cod_ibge
-    ELSE Cidades.cod_ibge
-  END as Cidade,
-  Pacientes.COR as Paciente_Cor,
-  CASE
-    WHEN Pacientes_Endereco.cep is NULL THEN Pacientes_Endereco.bcl_clo_cep
-    ELSE Pacientes_Endereco.cep
-  END as CEP,
-  Tipo_Logradouros.codigo_base_sus as Cod_Logradouro,
-  replace(CID.codigo, '.', '') as CID,
-  procedimentos.quantidade as Procedimento_Quantidade,
-  faturamento_procedimentos.cod_tabela as procedimento_sus
-FROM
-  agh.mam_proc_realizados as procedimentos
-  LEFT OUTER JOIN agh.fat_conv_grupo_itens_proced as faturamento_grupos on faturamento_grupos.phi_seq = procedimentos.phi_seq
-  LEFT OUTER JOIN agh.fat_itens_proced_hospitalar as faturamento_procedimentos on faturamento_procedimentos.pho_seq = faturamento_grupos.iph_pho_seq
-  and faturamento_procedimentos.seq = faturamento_grupos.iph_seq
-  LEFT OUTER JOIN agh.fat_procedimentos_registro as faturamento_registros on faturamento_registros.cod_procedimento = faturamento_procedimentos.cod_tabela
-  LEFT OUTER JOIN agh.fat_cbos as cbos on cbos.seq = procedimentos.cbo
-  LEFT OUTER JOIN agh.aip_pacientes as pacientes on pacientes.codigo = procedimentos.pac_codigo
-  LEFT OUTER JOIN agh.rap_servidores as servidores on servidores.matricula = procedimentos.ser_matricula
-  and servidores.vin_codigo = procedimentos.ser_vin_codigo
-  LEFT OUTER JOIN agh.rap_pessoa_tipo_informacoes servidores_CNS on servidores_CNS.pes_codigo = servidores.pes_codigo
-  AND servidores_CNS.tii_seq = 7
-  LEFT OUTER JOIN agh.rap_pessoa_tipo_informacoes servidores_CBO1 ON servidores_CBO1.pes_codigo = servidores.pes_codigo
-  AND servidores_CBO1.tii_seq = 2
-  LEFT OUTER JOIN agh.rap_pessoa_tipo_informacoes servidores_CBO2 ON servidores_CBO2.pes_codigo = servidores.pes_codigo
-  AND servidores_CBO2.tii_seq = 3
-  LEFT OUTER JOIN agh.rap_pessoas_fisicas as servidores_info on servidores_info.codigo = servidores.pes_codigo
-  LEFT OUTER JOIN AGH.AIP_ENDERECOS_PACIENTES Pacientes_Endereco ON Pacientes.CODIGO = Pacientes_Endereco.PAC_CODIGO
-  AND Pacientes_Endereco.tipo_endereco = 'R'
-  LEFT OUTER JOIN agh.aac_consultas as consultas ON consultas.numero = procedimentos.con_numero
-  LEFT OUTER JOIN agh.aip_cidades as Cidades ON Pacientes_Endereco.cdd_codigo = Cidades.codigo
-  LEFT OUTER JOIN agh.aip_cep_logradouros as CEP ON CEP.cep = Pacientes_Endereco.bcl_clo_cep
-  LEFT OUTER JOIN agh.aip_logradouros as Logradouros ON Logradouros.codigo = CEP.lgr_codigo
-  LEFT OUTER JOIN agh.aip_cidades as Cidades2 ON Cidades2.codigo = Logradouros.cdd_codigo
-  LEFT OUTER JOIN agh.aip_tipo_logradouros as Tipo_Logradouros ON Tipo_Logradouros.codigo = Logradouros.tlg_codigo
-  LEFT OUTER JOIN agh.agh_cids as CID ON CID.seq = procedimentos.cid_seq
-WHERE
-  procedimentos.dthr_valida BETWEEN '#startDate 00:00:00'
-  and '#endDate 23:59:59.999999'
-  AND consultas.ret_seq = 10
-  AND procedimentos.phi_seq IS NOT NULL
-  AND faturamento_procedimentos.cod_tabela NOT IN (
-    SELECT
-      cod_procedimento
-    FROM
-      agh.fat_procedimentos_registro
-    WHERE
-      cod_registro = '01'
-  )
-  AND faturamento_registros.cod_registro = '02'
-  AND consultas.pac_codigo <> 1000001
+SELECT TO_CHAR(PROCEDIMENTOS.DTHR_VALIDA,
+         'YYYYMMDD') AS DATA_PROCEDIMENTO,
+       PROCEDIMENTOS.CON_NUMERO AS NUM_CONSULTA,
+       PROCEDIMENTOS.PAC_CODIGO,
+       SERVIDORES_CNS.VALOR AS CNS,
+       SERVIDORES_INFO.NOME AS PROFISSIONAL_NOME,
+       SERVIDORES_CBO1.VALOR AS CBO,
+       PACIENTES.NRO_CARTAO_SAUDE AS PACIENTE_CARTAO_SUS,
+       PACIENTES.NOME AS PACIENTE_NOME,
+       PACIENTES.SEXO_BIOLOGICO AS PACIENTE_SEXO_BIOLOGICO,
+       TO_CHAR(PACIENTES.DT_NASCIMENTO,
+         'YYYYMMDD') AS PACIENTE_DATA_NASCIMENTO,
+       PACIENTES.NAC_CODIGO AS PACIENTE_NACIONALIDADE,
+       CASE
+           WHEN CIDADES.COD_IBGE IS NULL THEN CIDADES2.COD_IBGE
+            ELSE CIDADES.COD_IBGE
+             END AS CIDADE,
+       CASE
+           WHEN PACIENTES.COR = 'B' THEN '01'
+            WHEN PACIENTES.COR = 'P' THEN '02'
+            WHEN PACIENTES.COR = 'M' THEN '03'
+            WHEN PACIENTES.COR = 'A' THEN '04'
+            WHEN PACIENTES.COR = 'I' THEN '05'
+            ELSE '99'
+             END AS PACIENTE_COR,
+       CASE
+           WHEN PACIENTES_ENDERECO.CEP IS NULL THEN PACIENTES_ENDERECO.BCL_CLO_CEP
+            ELSE PACIENTES_ENDERECO.CEP
+             END AS CEP,
+       TIPO_LOGRADOUROS.CODIGO_BASE_SUS AS COD_LOGRADOURO,
+       REPLACE(CID.CODIGO,
+         '.',
+         '') AS CID,
+       PROCEDIMENTOS.QUANTIDADE AS PROCEDIMENTO_QUANTIDADE,
+       FATURAMENTO_PROCEDIMENTOS.COD_TABELA AS PROCEDIMENTO_SUS,
+       CASE
+           WHEN CIDADES.UF_SIGLA IS NOT NULL THEN CIDADES.UF_SIGLA
+            ELSE CIDADES2.UF_SIGLA
+             END AS UF,
+       CASE
+           WHEN PACIENTES_ENDERECO.LOGRADOURO IS NOT NULL THEN PACIENTES_ENDERECO.LOGRADOURO
+            ELSE LOGRADOUROS.NOME
+             END AS LOGRADOURO,
+       PACIENTES_ENDERECO.NRO_LOGRADOURO AS NRO,
+       PACIENTES_ENDERECO.COMPL_LOGRADOURO AS COMPLEMENTO,
+       PACIENTES_ENDERECO.BAIRRO AS BAIRRO
+  FROM AGH.MAM_PROC_REALIZADOS AS PROCEDIMENTOS
+  LEFT OUTER JOIN AGH.FAT_CONV_GRUPO_ITENS_PROCED AS FATURAMENTO_GRUPOS
+    ON FATURAMENTO_GRUPOS.PHI_SEQ = PROCEDIMENTOS.PHI_SEQ
+  LEFT OUTER JOIN AGH.FAT_ITENS_PROCED_HOSPITALAR AS FATURAMENTO_PROCEDIMENTOS
+    ON FATURAMENTO_PROCEDIMENTOS.PHO_SEQ = FATURAMENTO_GRUPOS.IPH_PHO_SEQ
+   AND FATURAMENTO_PROCEDIMENTOS.SEQ = FATURAMENTO_GRUPOS.IPH_SEQ
+  LEFT OUTER JOIN AGH.FAT_PROCEDIMENTOS_REGISTRO AS FATURAMENTO_REGISTROS
+    ON FATURAMENTO_REGISTROS.COD_PROCEDIMENTO = FATURAMENTO_PROCEDIMENTOS.COD_TABELA
+  LEFT OUTER JOIN AGH.FAT_CBOS AS CBOS
+    ON CBOS.SEQ = PROCEDIMENTOS.CBO
+  LEFT OUTER JOIN AGH.AIP_PACIENTES AS PACIENTES
+    ON PACIENTES.CODIGO = PROCEDIMENTOS.PAC_CODIGO
+  LEFT OUTER JOIN AGH.RAP_SERVIDORES AS SERVIDORES
+    ON SERVIDORES.MATRICULA = PROCEDIMENTOS.SER_MATRICULA
+    AND SERVIDORES.VIN_CODIGO = PROCEDIMENTOS.SER_VIN_CODIGO
+  LEFT OUTER JOIN AGH.RAP_PESSOA_TIPO_INFORMACOES SERVIDORES_CNS
+    ON SERVIDORES_CNS.PES_CODIGO = SERVIDORES.PES_CODIGO
+   AND SERVIDORES_CNS.TII_SEQ = 7
+  LEFT OUTER JOIN AGH.RAP_PESSOA_TIPO_INFORMACOES SERVIDORES_CBO1
+    ON SERVIDORES_CBO1.PES_CODIGO = SERVIDORES.PES_CODIGO
+   AND SERVIDORES_CBO1.TII_SEQ = 2
+  LEFT OUTER JOIN AGH.RAP_PESSOA_TIPO_INFORMACOES SERVIDORES_CBO2
+    ON SERVIDORES_CBO2.PES_CODIGO = SERVIDORES.PES_CODIGO
+   AND SERVIDORES_CBO2.TII_SEQ = 3
+  LEFT OUTER JOIN AGH.RAP_PESSOAS_FISICAS AS SERVIDORES_INFO
+    ON SERVIDORES_INFO.CODIGO = SERVIDORES.PES_CODIGO
+  LEFT OUTER JOIN AGH.AIP_ENDERECOS_PACIENTES PACIENTES_ENDERECO
+    ON PACIENTES.CODIGO = PACIENTES_ENDERECO.PAC_CODIGO
+   AND PACIENTES_ENDERECO.TIPO_ENDERECO = 'R'
+  LEFT OUTER JOIN AGH.AAC_CONSULTAS AS CONSULTAS
+    ON CONSULTAS.NUMERO = PROCEDIMENTOS.CON_NUMERO
+  LEFT OUTER JOIN AGH.AIP_CIDADES AS CIDADES
+    ON PACIENTES_ENDERECO.CDD_CODIGO = CIDADES.CODIGO
+  LEFT OUTER JOIN AGH.AIP_CEP_LOGRADOUROS AS CEP
+    ON CEP.CEP = 
+      (CASE
+        WHEN PACIENTES_ENDERECO.CEP IS NOT NULL THEN PACIENTES_ENDERECO.CEP
+        ELSE PACIENTES_ENDERECO.BCL_CLO_CEP
+      END)
+  LEFT OUTER JOIN AGH.AIP_LOGRADOUROS AS LOGRADOUROS
+    ON LOGRADOUROS.CODIGO = CEP.LGR_CODIGO
+  LEFT OUTER JOIN AGH.AIP_CIDADES AS CIDADES2
+    ON CIDADES2.CODIGO = LOGRADOUROS.CDD_CODIGO
+  LEFT OUTER JOIN AGH.AIP_TIPO_LOGRADOUROS AS TIPO_LOGRADOUROS
+    ON TIPO_LOGRADOUROS.CODIGO = LOGRADOUROS.TLG_CODIGO
+  LEFT OUTER JOIN AGH.AGH_CIDS AS CID
+    ON CID.SEQ = PROCEDIMENTOS.CID_SEQ
+ WHERE PROCEDIMENTOS.DTHR_VALIDA BETWEEN '#startDate 00:00:00' AND '#endDate 23:59:59.999999'
+   AND CONSULTAS.RET_SEQ = 10
+   AND PROCEDIMENTOS.PHI_SEQ IS NOT NULL
+   AND FATURAMENTO_PROCEDIMENTOS.COD_TABELA NOT IN
+        (SELECT COD_PROCEDIMENTO
+        FROM AGH.FAT_PROCEDIMENTOS_REGISTRO
+        WHERE COD_REGISTRO = '01'
+       )
+   AND FATURAMENTO_REGISTROS.COD_REGISTRO = '02'
+   AND CONSULTAS.PAC_CODIGO <> 1000001
+   limit 1
