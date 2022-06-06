@@ -127,7 +127,7 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                 // Quantidade de Procedimentos
                 data += row[16].toString().padStart(6, '0')
                 // Caráter de Atendimento
-                data += 1
+                data += '01'
                 // Autorização do Estabelecimento
                 data += ''.padStart(13, ' ')
                 // Origem das informações
