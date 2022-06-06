@@ -15,6 +15,15 @@ const sumBy = (key: number, array: Array<any>) => {
     }, 0)
 }
 
+function calcAge(dateString: string): number {
+    const year = dateString.substring(0, 4)
+    const month = dateString.substring(4, 6)
+    const day = dateString.substring(6, 8)
+    console.log(year, month, day)
+    var birthday = +new Date(`${year}-${month}-${day}`)
+    return ~~((Date.now() - birthday) / (31557600000))
+}
+
 /**
  * 
  * @param competencia Competência a ser gerada
@@ -123,7 +132,7 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                 // CID-10
                 data += row[15].padEnd(4, ' ')
                 // Idade
-                data += ''.padStart(3, ' ')
+                data += calcAge(row[9]).toString().padStart(3, '0')
                 // Quantidade de Procedimentos
                 data += row[16].toString().padStart(6, '0')
                 // Caráter de Atendimento
@@ -137,7 +146,7 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                 // Data de Nascimento do Paciente
                 data += row[9]?.toString().padStart(8, ' ')
                 // Raça/Cor
-                data += ''.padEnd(2, ' ')
+                data += row[12].padEnd(2, ' ')
                 // Etnia
                 data += ''.padEnd(4, ' ')
                 // Nacionalidade
@@ -157,13 +166,13 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                 // Cod Logradouro Paciente
                 data += row[14].toString().padStart(3, '0')
                 // Endereço do Paciente
-                data += ''.padStart(30, ' ')
+                data += row[19].padStart(30, ' ')
                 // Complemento do Endereço do Paciente
-                data += ''.padStart(10, ' ')
+                data += row[21].padStart(10, ' ')
                 // Número do Endereço
-                data += ''.padStart(5, ' ')
+                data += row[20].padStart(5, ' ')
                 // Bairro do Endereço
-                data += ''.padStart(30, ' ')
+                data += row[22].padStart(30, ' ')
                 // Telefone do Paciente
                 data += ''.padStart(11, ' ')
                 // Email do Paciente
