@@ -128,7 +128,7 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                 // Sexo do Paciente
                 data += row[8].padStart(1, ' ')
                 // COD IBGE do Município
-                data += row[11].toString().padStart(6, '+').substring(0, 6)
+                data += row[11].toString().padStart(6, ' ').substring(0, 6)
                 // CID-10
                 data += row[15].padEnd(4, ' ')
                 // Idade
