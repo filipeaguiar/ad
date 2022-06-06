@@ -166,7 +166,7 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                 // Cod Logradouro Paciente
                 data += row[14].toString().padStart(3, '0')
                 // Endereço do Paciente
-                data += row[19].padStart(30, ' ')
+                data += row[19].padEnd(30, ' ')
                 // Complemento do Endereço do Paciente
                 data += row[21].padStart(10, ' ')
                 // Número do Endereço
