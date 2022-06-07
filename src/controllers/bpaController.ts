@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import BPAProvider from '../providers/BPAProvider'
 import fs from 'fs'
 import { parse } from 'csv'
+import csvHelper from '../helpers/csvHelper'
 
 /**
  * 
@@ -19,13 +20,11 @@ function calcAge(dateString: string): number {
     const year = dateString.substring(0, 4)
     const month = dateString.substring(4, 6)
     const day = dateString.substring(6, 8)
-    console.log(year, month, day)
     var birthday = +new Date(`${year}-${month}-${day}`)
     return ~~((Date.now() - birthday) / (31557600000))
 }
 
 /**
- * 
  * @param competencia Competência a ser gerada
  * @param linhas Linhas do arquivo
  * @param paginas numero de paginas
@@ -36,6 +35,7 @@ const generateHeader = (competencia: string, linhas: number, paginas: number, va
     let header = ''
     header += `01#BPA#${competencia}${linhas.toString().padStart(6, '0')}${paginas.toString().padStart(6, '0')}${validation}`
     header += 'UFPE - HOSPITAL DAS CLÍNICAS        24134488000299UFPE - HOSPITAL DAS CLÍNICAS            ED01.03\r\n'
+    csvHelper.readCSV('opa')
     return header
 }
 
@@ -146,7 +146,7 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                 // Data de Nascimento do Paciente
                 data += row[9]?.toString().padStart(8, ' ')
                 // Raça/Cor
-                data += row[12].padEnd(2, ' ')
+                data += row[12] ? row[12].padStart(2, '0') : 99
                 // Etnia
                 data += ''.padEnd(4, ' ')
                 // Nacionalidade

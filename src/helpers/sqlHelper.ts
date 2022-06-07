@@ -12,7 +12,7 @@ const createQuery = async (filename: string, args?: Object): Promise<string> => 
   return query
 }
 
-const generateDates = (anoMes): Object => {
+const generateDates = (anoMes): { startDate: string, endDate: string } => {
   const startDate: string = new Date(
     new Date(`${anoMes}-01`).getFullYear(),
     new Date(`${anoMes}-01`).getMonth() + 1, 1)
