@@ -2,15 +2,15 @@ import { Request, Response } from 'express'
 import BPAProvider from '../providers/BPAProvider'
 import fs from 'fs'
 import { parse } from 'csv'
-import csvHelper from '../helpers/csvHelper'
+import csvtojson from 'csvtojson'
+
 
 /**
- * 
  * @param key Chave do array cujos valores devem ser somados
  * @param array Array de objetos
  * @returns soma dos valores
  */
-const sumBy = (key: number, array: Array<any>) => {
+const sumBy = (key: number | string, array: Array<any>) => {
     return array.reduce((acc, curr) => {
         return acc + parseInt(curr[key])
     }, 0)
@@ -35,7 +35,6 @@ const generateHeader = (competencia: string, linhas: number, paginas: number, va
     let header = ''
     header += `01#BPA#${competencia}${linhas.toString().padStart(6, '0')}${paginas.toString().padStart(6, '0')}${validation}`
     header += 'UFPE - HOSPITAL DAS CLÍNICAS        24134488000299UFPE - HOSPITAL DAS CLÍNICAS            ED01.03\r\n'
-    csvHelper.readCSV('opa')
     return header
 }
 
@@ -74,10 +73,108 @@ const generateValidation = (
  * @returns Objeto com os dados do arquivo formatados
  */
 const BPAiMagnetico = async function (mesAno: String, file: any) {
+    const csvOptions = {
+        delimiter: ';',
+    }
+    var pageNumber = 1
+    var lineNumber = 0
+    const outputJSON = await csvtojson(csvOptions).fromFile(file)
+    let printable = ''
+    var arrayData = []
+    var pageNumber = 1
+    var lineNumber = 0
+    var totalLinhas = 0
+
+    outputJSON.forEach(el => {
+        if (lineNumber < 99) {
+            lineNumber++
+        } else {
+            lineNumber = 1
+            pageNumber++
+        }
+        totalLinhas++
+        printable += '03'
+        // CNES
+        printable += '0000396'
+        // Competência
+        printable += mesAno
+        // CNS Profissional
+        printable += el['cns'].toString().padStart(15, ' ')
+        // CBO Profissional
+        printable += el['cbo'].toString().padStart(6, '0')
+        // Data de Atendimento
+        printable += el['data_procedimento']
+        // Folha BPA
+        printable += pageNumber.toString().padStart(3, '0')
+        // Linha na Folha do BPA
+        printable += lineNumber.toString().padStart(2, '0')
+        // Código do Procedimento
+        printable += el['procedimento_sus']?.toString().padStart(10, '0')
+        // CNS do Paciente
+        printable += el['paciente_cartao_sus'].toString().padStart(15, ' ')
+        // Sexo do Paciente
+        printable += el['paciente_sexo_biologico'].padStart(1, ' ')
+        // COD IBGE do Município
+        printable += el['cidade'].toString().padStart(6, ' ').substring(0, 6)
+        // CID-10
+        printable += el['cid'].padEnd(4, ' ')
+        // Idade
+        printable += calcAge(el['paciente_data_nascimento']).toString().padStart(3, '0')
+        // Quantidade de Procedimentos
+        printable += el['procedimento_quantidade'].toString().padStart(6, '0')
+        // Caráter de Atendimento
+        printable += '01'
+        // Autorização do Estabelecimento
+        printable += ''.padStart(13, ' ')
+        // Origem das informações
+        printable += 'BPA'
+        // Nome do Paciente
+        printable += el['paciente_nome']?.substring(0, 30).padEnd(30, ' ')
+        // Data de Nascimento do Paciente
+        printable += el['paciente_data_nascimento']?.toString().padStart(8, ' ')
+        // Raça/Cor
+        printable += el['paciente_cor'] ? el['paciente_cor'].padStart(2, '0') : 99
+        // Etnia
+        printable += ''.padEnd(4, ' ')
+        // Nacionalidade
+        printable += el['paciente_nacionalidade'].toString().padStart(3, '0')
+        // Código do Serviço
+        printable += ''.padStart(3, ' ')
+        // Código de classificação
+        printable += ''.padStart(3, ' ')
+        // Sequência de Equipe
+        printable += ''.padStart(8, ' ')
+        // Área da Equipe
+        printable += ''.padStart(4, ' ')
+        // CNPJ 
+        printable += ''.padStart(14, ' ')
+        // CEP Paciente
+        printable += el['cep']?.toString().padStart(8, ' ')
+        // Cod Logradouro Paciente
+        printable += el['cod_logradouro'].toString().padStart(3, '0')
+        // Endereço do Paciente
+        printable += el['logradouro'].padEnd(30, ' ')
+        // Complemento do Endereço do Paciente
+        printable += el['complemento'].padEnd(10, ' ')
+        // Número do Endereço
+        printable += el['nro'].padStart(5, ' ')
+        // Bairro do Endereço
+        printable += el['bairro'].padEnd(30, ' ')
+        // Telefone do Paciente
+        printable += ''.padStart(11, ' ')
+        // Email do Paciente
+        printable += ''.padStart(40, ' ')
+        // Identificação Nacional de Equipes
+        printable += ''.padStart(10, ' ')
+        // Fim da linha
+        printable += '\r\n'
+    })
+
     const parser = parse({
         delimiter: ';',
         from_line: 2
     })
+
     var data = ''
     var arrayData = []
     var pageNumber = 1
@@ -168,15 +265,15 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                 // Endereço do Paciente
                 data += row[19].padEnd(30, ' ')
                 // Complemento do Endereço do Paciente
-                data += row[21].padStart(10, ' ')
+                data += row[21].padEnd(10, ' ')
                 // Número do Endereço
                 data += row[20].padStart(5, ' ')
                 // Bairro do Endereço
-                data += row[22].padStart(30, ' ')
+                data += row[22].padEnd(30, ' ')
                 // Telefone do Paciente
                 data += ''.padStart(11, ' ')
                 // Email do Paciente
-                data += ''.padStart(40, ' ')
+                data += ''.padEnd(40, ' ')
                 // Identificação Nacional de Equipes
                 data += ''.padStart(10, ' ')
                 // Fim da linha
@@ -190,7 +287,8 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                     totalProcedimentos: sumBy(16, arrayData),
                     totalPaginas: pageNumber,
                     totalLinhas: totalLinhas,
-                    data
+                    data,
+                    printable
                 })
             })
     })

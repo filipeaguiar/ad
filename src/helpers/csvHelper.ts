@@ -1,9 +1,9 @@
-import fs from 'fs/promises'
-
-const readCSV = (filename: string) => {
-
+const getTotal = function (Array: any[], field: string): number {
+  return Array.reduce((acc, curr) => {
+    return acc + curr[field]
+  }, 0)
 }
 
 export default class csvHelper {
-  static readCSV = readCSV
+  static getTotal = getTotal
 }
