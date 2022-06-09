@@ -21,6 +21,7 @@ import path from 'path'
 import procedimentosRouter from './routes/procedimentos'
 import relatorioConsultasRouter from './routes/relatorioConsultas'
 import relatorioPacientesFaltantesRouter from './routes/relatorioPacientesFaltantes'
+import medicamentosRouter from './routes/medicamentos'
 
 
 /**
@@ -48,6 +49,7 @@ app.use('/api/internacao', internacaoRouter)
 app.use('/api/procedimentos', procedimentosRouter)
 app.use('/api/relatorioconsultas', relatorioConsultasRouter)
 app.use('/api/relatoriopacientesfaltantes', relatorioPacientesFaltantesRouter)
+app.use('/api/medicamentos', medicamentosRouter)
 app.use(Express.urlencoded({ extended: true }))
 app.use(require('connect-history-api-fallback')())
 // Rota genérica, que redireciona todas as requisições para o /
