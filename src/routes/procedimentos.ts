@@ -4,6 +4,6 @@ import jwtValidation from "../middlewares/jwtValidation"
 
 const procedimentosRouter = Router()
 
-procedimentosRouter.get('/', jwtValidation.validate, procedimentosController.getProcedimentos)
+procedimentosRouter.get('/', procedimentosController.getProcedimentos)
 
 export default procedimentosRouter
