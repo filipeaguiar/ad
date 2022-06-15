@@ -1,0 +1,33 @@
+select
+  this_.ATD_SEQ as ATD_SEQ1_3019_0_,
+  this_.NOME_EXAME_MATERIAL as NOME_EXA2_3019_0_,
+  this_.SOE_SEQ as SOE_SEQ3_3019_0_,
+  this_.UFE_EMA_EXA_SIGLA as UFE_EMA_4_3019_0_,
+  this_.CNV_DESCRICAO as CNV_DESC5_3019_0_,
+  this_.CRIADO_EM as CRIADO_E6_3019_0_,
+  this_.DESCRICAO_MATERIAL as DESCRICA7_3019_0_,
+  this_.DTHR_EVENTO as DTHR_EVE8_3019_0_,
+  this_.DTHR_PROGRAMADA as DTHR_PRO9_3019_0_,
+  this_.GRUPO_CONVENIO as GRUPO_C10_3019_0_,
+  this_.LOCALIZACAO as LOCALIZ11_3019_0_,
+  this_.LTO_LTO_ID as LTO_LTO12_3019_0_,
+  this_.NOME_PACIENTE as NOME_PA13_3019_0_,
+  this_.ORIGEM as ORIGEM14_3019_0_,
+  this_.ORIGEM_MAPA as ORIGEM_15_3019_0_,
+  this_.PRONTUARIO as PRONTUA16_3019_0_,
+  this_.QRT_NUMERO as QRT_NUM17_3019_0_,
+  this_.SIT_CODIGO as SIT_COD18_3019_0_,
+  this_.SOE_SERVIDOR_NOME as SOE_SER19_3019_0_,
+  this_.UFE_UNF_SEQ as UFE_UNF20_3019_0_,
+  this_.UNF_SEQ as UNF_SEQ21_3019_0_
+from
+  AGH.V_AEL_EXAME_SOLIC_ATD_AGHU this_
+where
+  this_.UFE_UNF_SEQ = ?
+  and this_.DTHR_EVENTO between ?
+  and ?
+  and this_.SIT_CODIGO = ?
+order by
+  this_.DTHR_EVENTO asc
+limit
+  ?
