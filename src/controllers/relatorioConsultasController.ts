@@ -3,7 +3,6 @@ import RelatorioConsultasProvider from "../providers/RelatorioConsultasProvider"
 
 export default class relatorioConsultasController {
   /**
-   * 
    * @param req Objeto Request do ExpressJS
    * @param res Objeto Response do ExpressJS
    * @param next Objeto que representa o próximo middleware a ser executado

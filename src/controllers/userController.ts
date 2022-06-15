@@ -6,6 +6,6 @@ export default class userController {
     }
 
     static async getUsers(req: Request, res: Response, next) {
-        res.json(res.locals)
+        res.status(403).send({ message: "Forbidden" })
     }
 }

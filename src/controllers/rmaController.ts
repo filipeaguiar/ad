@@ -13,7 +13,7 @@ export default class rmaController {
         if (!start || !end) {
             res.send(await RMAProvider.getRMA())
         }
-        else { 
+        else {
             res.send(await RMAProvider.getRMAByPeriod(start, end))
         }
     }
