@@ -236,7 +236,7 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
                     // Caráter de Atendimento
                     data += ''.padStart(2, ' ')
                     // Autorização do Estabelecimento
-                    data += ''.padStart(13, ' ')
+                    data += ''.padStart(13, '01')
                     // Origem das informações
                     data += 'BPA'
                     // Nome do Paciente
