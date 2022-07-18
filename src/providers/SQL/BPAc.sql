@@ -16,7 +16,7 @@
       WHEN servidores_informacoes_cbo.valor like '2252%' THEN 0301010072
       WHEN servidores_informacoes_cbo.valor like '2253%' THEN 0301010072
       ELSE 0301010048
-    END as procedimento_sus -------------------------------------------------------------------
+    END as procedimento_sus
   from
     agh.aac_consultas as consultas -- Informações da Grade
     LEFT JOIN agh.aac_grade_agendamen_consultas as grades ON grades.seq = consultas.grd_seq -- Pega informações do retorno, pra saber status da consulta
@@ -95,7 +95,7 @@ UNION
     AND '#endDate 23:59:59.999999'
     AND procedimentos.cbo IS NOT NULL
     AND procedimentos.phi_seq IS NOT NULL
-    AND faturamento_registros.cod_registro = '01'
+    AND faturamento_procedimentos.cod_tabela IN (#procedimentos)
     AND procedimentos.pac_codigo <> 1000001
     AND cbos.codigo IS NOT NULL
   group by
