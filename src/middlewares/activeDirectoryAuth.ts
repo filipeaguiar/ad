@@ -19,17 +19,7 @@ export default class activeDirectoryAuthMiddleware {
                 name: name,
                 groups: groups
               }
-              // jwt.sign(payload, process.env.JWT_SECRET, (err, token) => {
-              //   if (err) {
-              //     res.status(500).json({ msg: "Could not generate JWT", error: err })
-              //     return
-              //   }
-              //   res.locals.token = "BEARER " + token
-              //   console.log(`Token issued to: ${JSON.stringify(payload)}`)
-              //   next()
-              // }, { expiresIn: '1m' })
-
-              const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1m' })
+              const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' })
               res.locals.token = "BEARER " + token
               console.log(`Token issued to: ${JSON.stringify(payload)}`)
               next()

@@ -81,11 +81,11 @@ const generateValidation = (
 const BPAiMagnetico = async function (mesAno: String, file: any) {
     try {
         const csvOptions = {
-            delimiter: ';',
+            delimiter: ';'
         }
         var pageNumber = 1
         var lineNumber = 0
-        const outputJSON = await csvtojson(csvOptions).fromFile(file)
+        const outputJSON = await csvtojson(csvOptions).fromFile(file, { encoding: 'UTF-8' })
 
         let printable = ''
         var arrayData = []
@@ -107,29 +107,29 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
             // Competência
             printable += mesAno
             // CNS Profissional
-            printable += el['cns'].toString().padStart(15, ' ')
+            printable += el['cns'].toString().substring(0, 15).padStart(15, ' ')
             // CBO Profissional
-            printable += el['cbo'].toString().padStart(6, '0')
+            printable += el['cbo'].toString().substring(0, 6).padStart(6, '0')
             // Data de Atendimento
-            printable += el['data_procedimento'].padStart(8, ' ')
+            printable += el['data_procedimento'].substring(0, 8).padStart(8, ' ')
             // Folha BPA
             printable += pageNumber.toString().padStart(3, '0')
             // Linha na Folha do BPA
             printable += lineNumber.toString().padStart(2, '0')
             // Código do Procedimento
-            printable += el['procedimento_sus']?.toString().padStart(10, '0')
+            printable += el['procedimento_sus']?.toString().substring(0, 10).padStart(10, '0')
             // CNS do Paciente
-            printable += el['paciente_cartao_sus'].toString().padStart(15, ' ')
+            printable += el['paciente_cartao_sus'].toString().substring(0, 15).padStart(15, ' ')
             // Sexo do Paciente
-            printable += el['paciente_sexo_biologico'].padStart(1, ' ')
+            printable += el['paciente_sexo_biologico'].substring(0, 1).padStart(1, ' ')
             // COD IBGE do Município
             printable += el['cidade'].toString().substring(0, 6).padStart(6, ' ')
             // CID-10
-            printable += el['cid'].padEnd(4, ' ')
+            printable += el['cid'].substring(0, 4).padEnd(4, ' ')
             // Idade
-            printable += calcAge(el['paciente_data_nascimento']).toString().padStart(3, '0')
+            printable += calcAge(el['paciente_data_nascimento']).toString().substring(0, 3).padStart(3, '0')
             // Quantidade de Procedimentos
-            printable += el['procedimento_quantidade'].toString().padStart(6, '0')
+            printable += el['procedimento_quantidade'].toString().substring(0, 6).padStart(6, '0')
             // Caractere de Atendimento
             printable += '01'
             // Autorização do Estabelecimento
@@ -139,13 +139,13 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
             // Nome do Paciente
             printable += el['paciente_nome']?.substring(0, 30).padEnd(30, ' ')
             // Data de Nascimento do Paciente
-            printable += el['paciente_data_nascimento']?.toString().padStart(8, ' ')
+            printable += el['paciente_data_nascimento']?.toString().substring(0, 8).padStart(8, ' ')
             // Raça/Cor
-            printable += el['paciente_cor'] ? el['paciente_cor'].padStart(2, '0') : 99
+            printable += el['paciente_cor'] ? el['paciente_cor'].substring(0, 2).padStart(2, '0') : 99
             // Etnia
             printable += ''.padEnd(4, ' ')
             // Nacionalidade
-            printable += el['paciente_nacionalidade'].toString().padStart(3, '0')
+            printable += el['paciente_nacionalidade'].toString().substring(0, 3).padStart(3, '0')
             // Código do Serviço
             printable += ''.padStart(3, ' ')
             // Código de classificação
@@ -157,17 +157,17 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
             // CNPJ 
             printable += ''.padStart(14, ' ')
             // CEP Paciente
-            printable += el['cep']?.toString().padStart(8, ' ')
+            printable += el['cep']?.toString().substring(0, 8).padStart(8, ' ')
             // Cod Logradouro Paciente
-            printable += el['cod_logradouro'].toString().padStart(3, '0')
+            printable += el['cod_logradouro'].toString().substring(0, 3).padStart(3, '0')
             // Endereço do Paciente
-            printable += el['logradouro'].padEnd(30, ' ')
+            printable += el['logradouro'].substring(0, 30).padEnd(30, ' ')
             // Complemento do Endereço do Paciente
-            printable += el['complemento'].padEnd(10, ' ')
+            printable += el['complemento'].substring(0, 10).padEnd(10, ' ')
             // Número do Endereço
-            printable += el['nro'].padStart(5, ' ')
+            printable += el['nro'].substring(0, 5).padStart(5, ' ')
             // Bairro do Endereço
-            printable += el['bairro'].padEnd(30, ' ')
+            printable += el['bairro'].substring(0, 30).padEnd(30, ' ')
             // Telefone do Paciente
             printable += ''.padStart(11, ' ')
             // Email do Paciente
@@ -269,7 +269,6 @@ export default class bpaController {
     static async getBPAc(req: Request, res: Response, next) {
         const procedimentosBPAc = await procedimentos()
         const BPAc = await BPAProvider.getBPAc(req.params.mesAno, procedimentosBPAc)
-        console.log(BPAc)
         res.send(BPAc)
     }
 
@@ -298,7 +297,6 @@ export default class bpaController {
             const header = generateHeader(req.params.mesAno, totalLinhas, totalPaginas, validation)
             res.send(header + bpac.data + bpai.data)
         } catch (err) {
-            console.dir(err)
             res.send(err.message)
         }
     }
