@@ -6,8 +6,13 @@ import csvtojson from 'csvtojson'
 import SIGTAPHelper from '../helpers/sigtapHelper'
 
 
-const procedimentos = async () => {
+const procedimentosBPAc = async () => {
     const procedimentos = await SIGTAPHelper.procedimentosBPA('rl_procedimento_registro.txt')
+    return procedimentos
+}
+
+const procedimentosPAB = async () => {
+    const procedimentos = await SIGTAPHelper.procedimentosPAB('tb_procedimento.txt')
     return procedimentos
 }
 
@@ -85,7 +90,7 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
         }
         var pageNumber = 1
         var lineNumber = 0
-        const outputJSON = await csvtojson(csvOptions).fromFile(file, { encoding: 'UTF-8' })
+        let outputJSON = await csvtojson(csvOptions).fromFile(file)
 
         let printable = ''
         var arrayData = []
@@ -267,14 +272,16 @@ const BPAcMagnetico = async function (mesAno: String, file: any) {
 export default class bpaController {
 
     static async getBPAc(req: Request, res: Response, next) {
-        const procedimentosBPAc = await procedimentos()
-        const BPAc = await BPAProvider.getBPAc(req.params.mesAno, procedimentosBPAc)
+        const listaBPAc = await procedimentosBPAc()
+        const listaPAB = await procedimentosPAB()
+        const BPAc = await BPAProvider.getBPAc(req.params.mesAno, listaBPAc, listaPAB)
         res.send(BPAc)
     }
 
     static async getBPAi(req: Request, res: Response, next) {
-        const procedimentosBPAc = await procedimentos()
-        const BPAi = await BPAProvider.getBPAi(req.params.mesAno, procedimentosBPAc)
+        const listaBPAc = await procedimentosBPAc()
+        const listaPAB = await procedimentosPAB()
+        const BPAi = await BPAProvider.getBPAi(req.params.mesAno, listaBPAc, listaPAB)
         res.send(BPAi)
     }
 
@@ -295,7 +302,10 @@ export default class bpaController {
             const totalLinhas = parseInt(bpac.totalLinhas) + parseInt(bpai.totalLinhas)
 
             const header = generateHeader(req.params.mesAno, totalLinhas, totalPaginas, validation)
-            res.send(header + bpac.data + bpai.data)
+            res.charset = 'iso-8859-1';
+            res.setHeader('Content-type', 'text/plain');
+            const bpamagnetico = Buffer.from(header + bpac.data + bpai.data)
+            res.send(bpamagnetico)
         } catch (err) {
             res.send(err.message)
         }

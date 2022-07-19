@@ -95,7 +95,8 @@ UNION
     AND '#endDate 23:59:59.999999'
     AND procedimentos.cbo IS NOT NULL
     AND procedimentos.phi_seq IS NOT NULL
-    AND faturamento_procedimentos.cod_tabela IN (#procedimentos)
+    AND faturamento_procedimentos.cod_tabela IN (#procedimentosBPAc)
+    AND faturamento_procedimentos.cod_tabela NOT IN (#procedimentosPAB)
     AND procedimentos.pac_codigo <> 1000001
     AND cbos.codigo IS NOT NULL
   group by

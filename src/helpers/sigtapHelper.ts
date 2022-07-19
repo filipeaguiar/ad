@@ -18,6 +18,23 @@ const procedimentosBPA = async (filename: string) => {
 
 }
 
+const procedimentosPAB = async (filename: string) => {
+  const filePath = path.join(__dirname, `../static/sigtap/${filename}`)
+  const fileBuffer = await fsp.readFile(filePath, 'latin1')
+  const fileContent = fileBuffer.toString()
+  let procedimentos = []
+  fileContent.split('\r\n').forEach(r => {
+    procedimentos.push({
+      procedimento: r.substring(0, 10),
+      financiamento: r.substring(312, 314)
+    })
+  })
+  const financiamentosPAB = procedimentos.filter(r => r.financiamento === '01')
+  const pab = financiamentosPAB.map(r => `'${r.procedimento}'`)
+  return pab.join(', ')
+}
+
 export default class SIGTAPHelper {
   static procedimentosBPA = procedimentosBPA
+  static procedimentosPAB = procedimentosPAB
 }
