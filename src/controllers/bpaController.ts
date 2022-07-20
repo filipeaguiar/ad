@@ -293,10 +293,10 @@ export default class bpaController {
             const bpac: any = await BPAcMagnetico(req.params.mesAno, bpacFile)
             const bpai: any = await BPAiMagnetico(req.params.mesAno, bpaiFile)
             const validation = generateValidation(
-                bpac.somaProcedimentos || 0,
-                bpac.totalProcedimentos || 0,
-                bpai.somaProcedimentos || 0,
-                bpai.totalProcedimentos || 0
+                bpac.somaProcedimentos,
+                bpac.totalProcedimentos,
+                bpai.somaProcedimentos,
+                bpai.totalProcedimentos
             )
             const totalPaginas = parseInt(bpac.totalPaginas) + parseInt(bpai.totalPaginas)
             const totalLinhas = parseInt(bpac.totalLinhas) + parseInt(bpai.totalLinhas)
