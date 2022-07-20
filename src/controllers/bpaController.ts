@@ -112,11 +112,11 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
             // Competência
             printable += mesAno
             // CNS Profissional
-            printable += el['cns'].toString().substring(0, 15).padStart(15, ' ')
+            printable += el['cns']?.toString().substring(0, 15).padStart(15, ' ')
             // CBO Profissional
-            printable += el['cbo'].toString().substring(0, 6).padStart(6, '0')
+            printable += el['cbo']?.toString().substring(0, 6).padStart(6, '0')
             // Data de Atendimento
-            printable += el['data_procedimento'].substring(0, 8).padStart(8, ' ')
+            printable += el['data_procedimento']?.substring(0, 8).padStart(8, ' ')
             // Folha BPA
             printable += pageNumber.toString().padStart(3, '0')
             // Linha na Folha do BPA
@@ -124,17 +124,17 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
             // Código do Procedimento
             printable += el['procedimento_sus']?.toString().substring(0, 10).padStart(10, '0')
             // CNS do Paciente
-            printable += el['paciente_cartao_sus'].toString().substring(0, 15).padStart(15, ' ')
+            printable += el['paciente_cartao_sus']?.toString().substring(0, 15).padStart(15, ' ')
             // Sexo do Paciente
-            printable += el['paciente_sexo_biologico'].substring(0, 1).padStart(1, ' ')
+            printable += el['paciente_sexo_biologico']?.substring(0, 1).padStart(1, ' ')
             // COD IBGE do Município
-            printable += el['cidade'].toString().substring(0, 6).padStart(6, ' ')
+            printable += el['cidade']?.toString().substring(0, 6).padStart(6, ' ')
             // CID-10
-            printable += el['cid'].substring(0, 4).padEnd(4, ' ')
+            printable += el['cid']?.substring(0, 4).padEnd(4, ' ')
             // Idade
-            printable += calcAge(el['paciente_data_nascimento']).toString().substring(0, 3).padStart(3, '0')
+            printable += calcAge(el['paciente_data_nascimento'])?.toString().substring(0, 3).padStart(3, '0')
             // Quantidade de Procedimentos
-            printable += el['procedimento_quantidade'].toString().substring(0, 6).padStart(6, '0')
+            printable += el['procedimento_quantidade']?.toString().substring(0, 6).padStart(6, '0')
             // Caractere de Atendimento
             printable += '01'
             // Autorização do Estabelecimento
@@ -150,7 +150,7 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
             // Etnia
             printable += ''.padEnd(4, ' ')
             // Nacionalidade
-            printable += el['paciente_nacionalidade'].toString().substring(0, 3).padStart(3, '0')
+            printable += el['paciente_nacionalidade']?.toString().substring(0, 3).padStart(3, '0')
             // Código do Serviço
             printable += ''.padStart(3, ' ')
             // Código de classificação
@@ -164,15 +164,15 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
             // CEP Paciente
             printable += el['cep']?.toString().substring(0, 8).padStart(8, ' ')
             // Cod Logradouro Paciente
-            printable += el['cod_logradouro'].toString().substring(0, 3).padStart(3, '0')
+            printable += el['cod_logradouro']?.toString().substring(0, 3).padStart(3, '0')
             // Endereço do Paciente
-            printable += el['logradouro'].substring(0, 30).padEnd(30, ' ')
+            printable += el['logradouro']?.substring(0, 30).padEnd(30, ' ')
             // Complemento do Endereço do Paciente
-            printable += el['complemento'].substring(0, 10).padEnd(10, ' ')
+            printable += el['complemento']?.substring(0, 10).padEnd(10, ' ')
             // Número do Endereço
-            printable += el['nro'].substring(0, 5).padStart(5, ' ')
+            printable += el['nro']?.substring(0, 5).padStart(5, ' ')
             // Bairro do Endereço
-            printable += el['bairro'].substring(0, 30).padEnd(30, ' ')
+            printable += el['bairro']?.substring(0, 30).padEnd(30, ' ')
             // Telefone do Paciente
             printable += ''.padStart(11, ' ')
             // Email do Paciente
@@ -293,10 +293,10 @@ export default class bpaController {
             const bpac: any = await BPAcMagnetico(req.params.mesAno, bpacFile)
             const bpai: any = await BPAiMagnetico(req.params.mesAno, bpaiFile)
             const validation = generateValidation(
-                bpac.somaProcedimentos,
-                bpac.totalProcedimentos,
-                bpai.somaProcedimentos,
-                bpai.totalProcedimentos
+                bpac.somaProcedimentos || 0,
+                bpac.totalProcedimentos || 0,
+                bpai.somaProcedimentos || 0,
+                bpai.totalProcedimentos || 0
             )
             const totalPaginas = parseInt(bpac.totalPaginas) + parseInt(bpai.totalPaginas)
             const totalLinhas = parseInt(bpac.totalLinhas) + parseInt(bpai.totalLinhas)
