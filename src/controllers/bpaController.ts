@@ -132,7 +132,7 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
             // CID-10
             printable += el['cid']?.substring(0, 4).padEnd(4, ' ')
             // Idade
-            printable += calcAge(el['paciente_data_nascimento'])?.toString().substring(0, 3).padStart(3, '0')
+            printable += calcAge(el['paciente_data_nascimento']).toString().substring(0, 3).padStart(3, '0')
             // Quantidade de Procedimentos
             printable += el['procedimento_quantidade']?.toString().substring(0, 6).padStart(6, '0')
             // Caractere de Atendimento
