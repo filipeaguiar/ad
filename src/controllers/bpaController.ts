@@ -303,8 +303,8 @@ export default class bpaController {
 
             const header = generateHeader(req.params.mesAno, totalLinhas, totalPaginas, validation)
             res.charset = 'iso-8859-1';
-            res.setHeader('Content-type', 'text/plain');
-            const bpamagnetico = Buffer.from(header + bpac.data + bpai.data)
+            res.setHeader('Content-type', 'text/plain; charset=iso-8859-1');
+            const bpamagnetico = Buffer.from(header + bpac.data + bpai.data, 'latin1')
             res.send(bpamagnetico)
         } catch (err) {
             res.send(err.message)
