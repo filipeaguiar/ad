@@ -23,6 +23,7 @@ import relatorioConsultasRouter from './routes/relatorioConsultas'
 import relatorioPacientesFaltantesRouter from './routes/relatorioPacientesFaltantes'
 import medicamentosRouter from './routes/medicamentos'
 import mancheteRouter from './routes/manchete'
+import leitosRouter from './routes/leitos'
 
 
 /**
@@ -47,6 +48,7 @@ app.use('/api/material', materialRouter)
 app.use('/api/bpa', bpaRouter)
 app.use('/api/file', uploadRouter)
 app.use('/api/internacao', internacaoRouter)
+app.use('/api/leitos', leitosRouter)
 app.use('/api/procedimentos', procedimentosRouter)
 app.use('/api/relatorioconsultas', relatorioConsultasRouter)
 app.use('/api/relatoriopacientesfaltantes', relatorioPacientesFaltantesRouter)
