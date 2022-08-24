@@ -2,14 +2,18 @@ SELECT
   internacoes.seq,
   especialidades.nome_especialidade enfermaria,
   pacientes.prontuario,
-  internacoes.lto_lto_id as numero_leito,
+  CASE
+    WHEN internacoes.lto_lto_id IS NULL THEN '0000'
+    ELSE internacoes.lto_lto_id
+  END as numero_leito,
   internacoes.dthr_internacao as data_internacao,
   (
     internacoes.dthr_alta_medica :: date - internacoes.dthr_internacao :: date
   ) as tempo_ocupacao,
   internacoes.dthr_alta_medica as data_alta,
   leitos.ind_acompanhamento_ccih as ccih,
-  observacoes.descricao as observacao
+  observacoes.descricao as observacao,
+  internacoes.ind_saida_pac as alta
 FROM
   agh.ain_internacoes as internacoes
   LEFT OUTER JOIN agh.agh_especialidades as especialidades ON especialidades.seq = internacoes.esp_seq
@@ -18,6 +22,6 @@ FROM
   LEFT OUTER JOIN agh.aip_pacientes as pacientes on internacoes.pac_codigo = pacientes.codigo
 WHERE
   leitos.ind_situacao = 'A'
+  or internacoes.lto_lto_id is null
 ORDER BY
   tempo_ocupacao
-  
