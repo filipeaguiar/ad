@@ -1,6 +1,6 @@
 SELECT
   internacoes.seq,
-  especialidades.nome_especialidade enfermaria,
+  especialidades.nome_especialidade as enfermaria,
   CASE
     WHEN (especialidades.nome_especialidade = 'OBSTETRÍCIA' AND internacoes.lto_lto_id IS NULL) THEN 'EX-COB'
     WHEN (especialidades.nome_especialidade = 'NEONATOLOGIA' AND internacoes.lto_lto_id IS NULL) THEN 'EX-UCIN'
@@ -12,9 +12,8 @@ SELECT
     ELSE internacoes.lto_lto_id
   END as numero_leito,
   internacoes.dthr_internacao as data_internacao,
-  (
-    internacoes.dthr_alta_medica :: date - internacoes.dthr_internacao :: date
-  ) as tempo_ocupacao,
+  movimentacoes.dthr_lancamento as data_movimentacao,
+  (internacoes.dthr_alta_medica :: date - internacoes.dthr_internacao :: date) as tempo_ocupacao,
   internacoes.dthr_alta_medica as data_alta,
   CASE
    WHEN leitos.ind_acompanhamento_ccih is null then 'S'
@@ -29,8 +28,9 @@ FROM
   LEFT OUTER JOIN agh.agh_unidades_funcionais as unidades ON unidades.seq = leitos.unf_seq
   LEFT OUTER JOIN agh.ain_observacoes_censo as observacoes ON observacoes.int_seq = internacoes.seq
   LEFT OUTER JOIN agh.aip_pacientes as pacientes on internacoes.pac_codigo = pacientes.codigo
+  LEFT OUTER JOIN agh.ain_movimentos_internacao as movimentacoes on movimentacoes.int_seq = internacoes.seq
 WHERE
   (leitos.ind_situacao = 'A'
   or internacoes.lto_lto_id is null)
-ORDER BY
-  tempo_ocupacao
+/*ORDER BY
+  tempo_ocupacao */
