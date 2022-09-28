@@ -15,6 +15,7 @@ import userRouter from './routes/user'
 import rmaRouter from './routes/rma'
 import materialRouter from './routes/material'
 import bpaRouter from './routes/bpa'
+import aihRouter from './routes/aih'
 import uploadRouter from './routes/upload'
 import internacaoRouter from './routes/internacao'
 import path from 'path'
@@ -46,6 +47,7 @@ app.use('/api/rma', rmaRouter)
 app.use('/api/users', userRouter)
 app.use('/api/material', materialRouter)
 app.use('/api/bpa', bpaRouter)
+app.use('/api/aih', aihRouter)
 app.use('/api/file', uploadRouter)
 app.use('/api/internacao', internacaoRouter)
 app.use('/api/leitos', leitosRouter)
