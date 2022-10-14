@@ -61,7 +61,8 @@ replace(cids.codigo, '.', '') AS procedimento_cid,
 replace(internacoes.tam_codigo, '.', '') AS procedimento_motivo_encerramento,
 pessoas.pes_cpf AS procedimento_documento_solicitante,
 pessoas.pes_cpf AS procedimento_documento_responsavel,
-pessoas.pes_cpf AS procedimento_documento_autorizador,
+'704803502697949' AS procedimento_documento_diretor_clinico,
+'706103599305660' AS procedimento_documento_autorizador,
 '' AS aih_anterior,
 '' AS aih_posterior
 

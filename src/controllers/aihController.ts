@@ -42,9 +42,9 @@ const SISAIH = async (mesAno: String, file: any) => {
             printable += '1'
             printable += el['procedimento_documento_solicitante'].padStart(15, '0')
             printable += '1'
-            printable += el['procedimento_documento_responsavel'].padStart(15, '0') // Filipe Carrilho
+            printable += el['procedimento_documento_responsavel'].padStart(15, '0')
             printable += '1'
-            printable += ''.padStart(15, '!')
+            printable += el['procedimento_documento_diretor_clinico'].padStart(15, '0') // Filipe Carrilho
             printable += '1'
             printable += el['procedimento_documento_autorizador'].padStart(15, '0') // Glauber Leitão
             printable += ''.padStart(15, '0')
