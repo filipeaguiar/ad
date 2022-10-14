@@ -108,7 +108,8 @@ export default class AIHController {
      * @param next Objeto que representa o próximo middleware a ser executado
      */
     static async getAIH(req: Request, res: Response, next) {
-        const AIH = await AIHProvider.getAIH(req.params.mesAno)
+        console.log(req.query)
+        const AIH = await AIHProvider.getAIH(req.query.startDate, req.query.endDate)
         res.send(AIH)
     }
 
@@ -120,9 +121,9 @@ export default class AIHController {
 
     static async getSISAIH(req: Request, res: Response, next) {
         try {
-            const competencia = req.params.mesAno.substring(0, 4) + '-' + req.params.mesAno.substring(4, 6)
-            const aihFile = `${req.app.locals.__basedir}/aih/${competencia}-AIH.csv`
-            const sisaihContent: any = await SISAIH(req.params.mesAno, aihFile)
+            const competencia = req.params.fileName.substring(0, 4) + req.params.fileName.substring(5, 7)
+            const aihFile = `${req.app.locals.__basedir}/aih/${req.params.fileName}`
+            const sisaihContent: any = await SISAIH(competencia, aihFile)
             res.charset = 'iso-8859-1';
             res.setHeader('Content-type', 'text/plain; charset=iso-8859-1')
             const sisaih = Buffer.from(sisaihContent.data, 'latin1')

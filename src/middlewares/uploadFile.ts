@@ -4,16 +4,23 @@ import multer from 'multer'
 const maxSize = 20 * 1024 * 1024
 let storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        console.log(req.app.locals.__basedir)
-        if (file.originalname.substring(file.originalname.length - 3, file.originalname.length) === 'txt') {
-            cb(null, req.app.locals.__basedir + '/sigtap')
+        try {
+            if (file.originalname.substring(file.originalname.length - 3, file.originalname.length) === 'txt') {
+                cb(null, req.app.locals.__basedir + '/sigtap')
+            }
+            if (file.originalname.substring(file.originalname.length - 3, file.originalname.length) === 'csv') {
+                cb(null, `${req.app.locals.__basedir}/${req.query.path}`)
+            }
         }
-        if (file.originalname.substring(file.originalname.length - 3, file.originalname.length) === 'csv') {
-            cb(null, req.app.locals.__basedir + '/bpa')
+        catch (err) {
+            console.log(err)
         }
     },
     filename: (req, file, cb) => {
-        cb(null, file.originalname)
+        try { cb(null, file.originalname) }
+        catch (err) {
+            console.log(err)
+        }
     }
 })
 

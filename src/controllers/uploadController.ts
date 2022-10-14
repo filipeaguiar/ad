@@ -51,7 +51,7 @@ export default class uploadController {
     }
 
     static getBPAList(req, res) {
-        const directoryPath = req.app.locals.__basedir + '/bpa'
+        const directoryPath = `${req.app.locals.__basedir}/${req.query.path}`
         try {
             fs.readdir(directoryPath, function (err, files) {
                 let fileInfos = []
@@ -84,8 +84,8 @@ export default class uploadController {
     }
 
     static delete(req, res) {
-        const fileName = req.params.fileName
-        const directoryPath = req.app.locals.__basedir + '/bpa'
+        const fileName = req.query.fileName
+        const directoryPath = `${req.app.locals.__basedir}/${req.query.path}`
         fs.unlink(`${directoryPath}/${fileName}`, (err) => {
             if (err) {
                 res.status(500).send({

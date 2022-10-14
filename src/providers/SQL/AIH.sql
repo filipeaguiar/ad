@@ -105,7 +105,7 @@ ON internacoes.iph_pho_seq = procedimentos.pho_seq
 AND internacoes.iph_seq = procedimentos.seq
 -------------------------
 
-WHERE internacoes.dthr_alta_medica BETWEEN '2022-09-16 00:00:00' AND '2022-09-30 23:59:59.999999'
+WHERE internacoes.dthr_alta_medica BETWEEN '#startDate 00:00:00' AND '#endDate 23:59:59.999999'
 AND pacientes.prontuario <> '10000016'
 -- and internacoes.seq = 148104
 -- and internacoes.seq = 148104
