@@ -14,8 +14,8 @@ const SISAIH = async (mesAno: String, file: any) => {
         let printable = ''
 
         outputJSON.forEach(el => {
-            printable += ''.padStart(8, '0')
-            printable += ''.padStart(3, '0')
+            printable += ''.padStart(8, '0') // Num lote
+            printable += ''.padStart(3, '0') // Quantidade
             printable += mesAno.padEnd(6, ' ') // Competência
             printable += '000' // Sequencial
             printable += el['orgao_emissor'] // Órgão emissor da AIH
@@ -48,8 +48,8 @@ const SISAIH = async (mesAno: String, file: any) => {
             printable += '1'
             printable += el['procedimento_documento_autorizador'].padStart(15, '0') // Glauber Leitão
             printable += ''.padStart(15, '0')
-            printable += el['procedimento_cid'].padStart(4, ' ')
-            printable += el['paciente_nome'].padEnd(70, ' ')
+            printable += el['procedimento_cid'].padStart(4, ' ') // CID
+            /*printable += el['paciente_nome'].padEnd(70, ' ')
             printable += el['paciente_nascimento'].padStart(8, '0')
             printable += el['paciente_sexo'].padStart(1, 'M')
             printable += el['paciente_cor'].padStart(2, '0')
@@ -89,7 +89,7 @@ const SISAIH = async (mesAno: String, file: any) => {
                 printable += '0'
             }
 
-
+            */
             printable += '\r\n'
         })
         return {
