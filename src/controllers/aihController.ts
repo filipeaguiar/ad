@@ -48,6 +48,7 @@ const SISAIH = async (mesAno: String, file: any) => {
             printable += '2'
             printable += el['procedimento_documento_autorizador'].padStart(15, '0') // Glauber Leitão
             printable += el['procedimento_cid'].padStart(4, ' ') // CID
+            printable += ''.padStart(15, '0')
             printable += el['paciente_nome'].padEnd(70, ' ')
             printable += el['paciente_nascimento'].padStart(8, '0')
             printable += el['paciente_sexo'].padStart(1, 'M')
@@ -71,8 +72,9 @@ const SISAIH = async (mesAno: String, file: any) => {
             printable += el['paciente_prontuario'].padStart(15, '0')
             printable += '0000' // Numero da Enfermaria
             printable += '0000' // Numero do Leito
-            printable += ''.padEnd(730, '0')
-            printable += el['paciente_grau_instrucao'].padStart(1, '0')
+            printable += ''.padEnd(787, '0') // PROCEDIMENTOS SECUNDÁRIOS
+            printable += ''.padEnd(35, '0') // FILLER
+            /*printable += el['paciente_grau_instrucao'].padStart(1, '0')
             printable += ''.padEnd(4, ' ') // Cid Notificação - Laqueadura
             printable += '00' // Método Contraceptivo
             printable += '00' // Método Contraceptivo Laqueadura
@@ -86,7 +88,7 @@ const SISAIH = async (mesAno: String, file: any) => {
             for (let i = 0; i < 8; i++) {
                 printable += ''.padEnd(4, ' ')
                 printable += '0'
-            }
+            }*/
 
             printable += '\r\n'
         })
