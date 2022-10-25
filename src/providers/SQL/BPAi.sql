@@ -1,4 +1,4 @@
-SELECT TO_CHAR(PROCEDIMENTOS.DTHR_VALIDA,
+(SELECT TO_CHAR(PROCEDIMENTOS.DTHR_VALIDA,
          'YYYYMMDD') AS DATA_PROCEDIMENTO,
        PROCEDIMENTOS.CON_NUMERO AS NUM_CONSULTA,
        PROCEDIMENTOS.PAC_CODIGO,
@@ -12,8 +12,8 @@ SELECT TO_CHAR(PROCEDIMENTOS.DTHR_VALIDA,
          'YYYYMMDD') AS PACIENTE_DATA_NASCIMENTO,
        PACIENTES.NAC_CODIGO AS PACIENTE_NACIONALIDADE,
        CASE
-           WHEN CIDADES.COD_IBGE IS NULL THEN CIDADES2.COD_IBGE
-            ELSE CIDADES.COD_IBGE
+           WHEN CIDADES.COD_IBGE IS NULL THEN CIDADES2.COD_IBGE::text
+            ELSE CIDADES.COD_IBGE::text
              END AS CIDADE,
        CASE
            WHEN PACIENTES.COR = 'B' THEN '01'
@@ -43,7 +43,8 @@ SELECT TO_CHAR(PROCEDIMENTOS.DTHR_VALIDA,
              END AS LOGRADOURO,
        PACIENTES_ENDERECO.NRO_LOGRADOURO AS NRO,
        PACIENTES_ENDERECO.COMPL_LOGRADOURO AS COMPLEMENTO,
-       BAIRROS.descricao AS BAIRRO
+       BAIRROS.descricao AS BAIRRO,
+       'PROCEDIMENTO' AS TIPO_REGISTRO
   FROM AGH.MAM_PROC_REALIZADOS AS PROCEDIMENTOS
   LEFT OUTER JOIN AGH.FAT_CONV_GRUPO_ITENS_PROCED AS FATURAMENTO_GRUPOS
     ON FATURAMENTO_GRUPOS.PHI_SEQ = PROCEDIMENTOS.PHI_SEQ
@@ -107,4 +108,74 @@ SELECT TO_CHAR(PROCEDIMENTOS.DTHR_VALIDA,
    AND CONSULTAS.PAC_CODIGO <> 1000001
    AND FATURAMENTO_PROCEDIMENTOS.COD_TABELA <> '301010072'
    AND FATURAMENTO_PROCEDIMENTOS.COD_TABELA <> '301010048'
-   AND FATURAMENTO_PROCEDIMENTOS.COD_TABELA <> '101010028'
+   AND FATURAMENTO_PROCEDIMENTOS.COD_TABELA <> '101010028')
+UNION
+-- Exames ↓
+(
+SELECT 
+       to_char(exames.dthr_solicitacao,'YYYYMMDD') AS DATA_PROCEDIMENTO,
+       exames.PAC_CODIGO,
+       exames.num_solicitacao as num_consulta,
+       exames.CARTAO_SUS_CNS as cns,
+       exames.profissional_solicitante as PROFISSIONAL_NOME,
+       exames.cbo_principal AS CBO,
+       exames.nro_cartao_saude AS PACIENTE_CARTAO_SUS,
+       exames.nome_paciente AS PACIENTE_NOME,
+       SUBSTRING(pacientes.sexo, 1, 1) as PACIENTE_SEXO_BIOLOGICO,
+       CONCAT(SUBSTRING(exames.dt_nascimento, 7, 4),SUBSTRING(exames.dt_nascimento, 4, 2),SUBSTRING(exames.dt_nascimento, 1, 2)) AS PACIENTE_DATA_NASCIMENTO,
+       pacientes.nac_codigo as PACIENTE_NACIONALIDADE,
+       substring(pacientes.cidade_codigo_ibge::text, 1, 6) as CIDADE,
+       CASE
+        WHEN pacientes.cor = 'B' THEN '01'
+        WHEN pacientes.cor = 'P' THEN '02'
+        WHEN pacientes.cor = 'M' THEN '03'
+        WHEN pacientes.cor = 'A' THEN '04'
+        WHEN pacientes.cor = 'I' THEN '05'
+        ELSE '99'
+       END AS PACIENTE_COR,
+       pacientes.cep as CEP,
+       pacientes.tlg_codigo as COD_LOGRADOURO,
+       translate(exames.codigo_cid[1], '.', '') as CID,
+       1 as PROCEDIMENTO_QUANTIDADE,
+       procedimentosus.cod_tabela as PROCEDIMENTO_SUS,
+       pacientes.uf as UF,
+       pacientes.compl_logradouro as LOGRADOURO,
+       pacientes.nro_logradouro as NRO,
+       pacientes.compl_logradouro as COMPLEMENTO,
+       pacientes.bairro as BAIRRO,
+       'EXAMES' as TIPO_REGISTRO
+
+  /*   exames.prontuario as "PACIENTE_PRONTUARIO", 
+       pacientes.ddd_fone_residencial as "PACIENTE_TELEFONE_DDD",
+       pacientes.fone_residencial as "PACIENTE_TELEFONE",
+       to_char(exames.dthr_solicitacao,'YYYYMMDD') AS "DATA_CONSULTA",
+       pacientes.idade as "PACIENTE_IDADE"
+  */     
+  FROM PUBLIC.VW_EXAMES AS exames
+  
+  LEFT JOIN PUBLIC.VW_DADOS_PACIENTES AS pacientes
+    ON pacientes.PAC_CODIGO = exames.PAC_CODIGO
+  
+  LEFT OUTER JOIN agh.fat_proced_hosp_internos AS procedimentos 
+    ON exames.ufe_ema_man_seq = procedimentos.ema_man_seq
+    AND exames.sigla_exame = procedimentos.ema_exa_sigla
+  
+  LEFT OUTER JOIN public.vw_fat_associacao_procedimentos as procedimentosus
+    ON procedimentosus.phi_seq = procedimentos.seq
+    AND procedimentosus.cpg_cph_csp_seq = (select max(cpg_cph_csp_seq) from public.vw_fat_associacao_procedimentos)
+    AND exames.sigla_exame = procedimentosus.exame_sigla
+  
+  LEFT OUTER JOIN agh.agh_atendimentos as atendimentos ON atendimentos.seq = exames.atd_seq
+ 
+  WHERE exames.dthr_liberada BETWEEN '#startDate 00:00:00' AND '#endDate 23:59:59.999999' -- PERIODO
+   AND exames.SIT_CODIGO = 'LI' -- LIBERADO
+   AND exames.PRONTUARIO <> '10000016'
+   AND exames.PRONTUARIO <> '20618740'
+   AND atendimentos.origem = 'A'
+  AND procedimentosus.cod_tabela NOT IN (#procedimentosBPAc)
+  AND procedimentosus.cod_tabela NOT IN (#procedimentosPAB)
+ ORDER BY exames.NOME_PACIENTE,
+          exames.SIGLA_EXAME,
+          exames.TIPO_COLETA,
+          exames.SIT_ITEM_SOLICITACOES
+)
