@@ -2,7 +2,7 @@ SELECT
 internacoes.seq,
 '' AS nro_aih,
 '01' AS tipo_aih,
-'202209' AS apresentacao_aih, -- Inserir variável com a data
+'202209'::text AS apresentacao_aih, -- Inserir variável com a data
 pacientes.prontuario AS paciente_prontuario,
 to_char(internacoes.dthr_internacao, 'YYYYMMDD') AS data_internacao,
 to_char(internacoes.dthr_alta_medica, 'YYYYMMDD') AS data_saida,
@@ -59,8 +59,8 @@ CASE
 END AS procedimento_tipo_leito,
 replace(cids.codigo, '.', '') AS procedimento_cid,
 replace(internacoes.tam_codigo, '.', '') AS procedimento_motivo_encerramento,
-pessoas.pes_cpf AS procedimento_documento_solicitante,
-pessoas.pes_cpf AS procedimento_documento_responsavel,
+pessoas.valor AS procedimento_documento_solicitante,
+pessoas.valor AS procedimento_documento_responsavel,
 '704803502697949' AS procedimento_documento_diretor_clinico,
 '706103599305660' AS procedimento_documento_autorizador,
 '' AS aih_anterior,
@@ -85,8 +85,9 @@ LEFT OUTER JOIN agh.v_rap_servidores AS servidores
 ON servidores.matricula = internacoes.ser_matricula_professor
 AND servidores.vin_codigo = internacoes.ser_vin_codigo_professor
 
-LEFT OUTER JOIN agh.v_rap_pessoa_fisica AS pessoas
-ON pessoas.pes_codigo = servidores.pes_codigo
+LEFT OUTER JOIN AGH.RAP_PESSOA_TIPO_INFORMACOES as pessoas
+   ON pessoas.PES_CODIGO = SERVIDORES.PES_CODIGO
+   AND pessoas.TII_SEQ = 7
 -------------------------
 
 --- DADOS DO PACIENTE ---
