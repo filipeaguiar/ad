@@ -102,8 +102,8 @@
  WHERE PROCEDIMENTOS.DTHR_VALIDA BETWEEN '#startDate 00:00:00' AND '#endDate 23:59:59.999999'
    AND CONSULTAS.RET_SEQ = 10
    AND PROCEDIMENTOS.PHI_SEQ IS NOT NULL
-   AND FATURAMENTO_PROCEDIMENTOS.COD_TABELA NOT IN (#procedimentosBPAc)
-   AND FATURAMENTO_PROCEDIMENTOS.COD_TABELA NOT IN (#procedimentosPAB)
+   --AND FATURAMENTO_PROCEDIMENTOS.COD_TABELA NOT IN (#procedimentosBPAc)
+   --AND FATURAMENTO_PROCEDIMENTOS.COD_TABELA NOT IN (#procedimentosPAB)
    AND FATURAMENTO_REGISTROS.COD_REGISTRO = '02'
    AND CONSULTAS.PAC_CODIGO <> 1000001
    AND FATURAMENTO_PROCEDIMENTOS.COD_TABELA <> '301010072'
@@ -144,13 +144,7 @@ SELECT
        pacientes.compl_logradouro as COMPLEMENTO,
        pacientes.bairro as BAIRRO,
        'EXAMES' as TIPO_REGISTRO
-
-  /*   exames.prontuario as "PACIENTE_PRONTUARIO", 
-       pacientes.ddd_fone_residencial as "PACIENTE_TELEFONE_DDD",
-       pacientes.fone_residencial as "PACIENTE_TELEFONE",
-       to_char(exames.dthr_solicitacao,'YYYYMMDD') AS "DATA_CONSULTA",
-       pacientes.idade as "PACIENTE_IDADE"
-  */     
+   
   FROM PUBLIC.VW_EXAMES AS exames
   
   LEFT JOIN PUBLIC.VW_DADOS_PACIENTES AS pacientes
@@ -172,8 +166,8 @@ SELECT
    AND exames.PRONTUARIO <> '10000016'
    AND exames.PRONTUARIO <> '20618740'
    AND atendimentos.origem = 'A'
-  AND procedimentosus.cod_tabela NOT IN (#procedimentosBPAc)
-  AND procedimentosus.cod_tabela NOT IN (#procedimentosPAB)
+  --AND procedimentosus.cod_tabela NOT IN (#procedimentosBPAc)
+  --AND procedimentosus.cod_tabela NOT IN (#procedimentosPAB)
  ORDER BY exames.NOME_PACIENTE,
           exames.SIGLA_EXAME,
           exames.TIPO_COLETA,

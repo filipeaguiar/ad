@@ -16,7 +16,8 @@
       WHEN servidores_informacoes_cbo.valor like '2252%' THEN 0301010072
       WHEN servidores_informacoes_cbo.valor like '2253%' THEN 0301010072
       ELSE 0301010048
-    END as procedimento_sus
+    END as procedimento_sus,
+    'CONSULTAS' as tipo_registro
   from
     agh.aac_consultas as consultas -- Informações da Grade
     LEFT JOIN agh.aac_grade_agendamen_consultas as grades ON grades.seq = consultas.grd_seq -- Pega informações do retorno, pra saber status da consulta
@@ -81,7 +82,8 @@ UNION
     cbos.codigo as cbo,
     date_part('year', age(pacientes.dt_nascimento)) as idade,
     SUM(procedimentos.quantidade) as quantidade,
-    faturamento_procedimentos.cod_tabela as procedimento_sus
+    faturamento_procedimentos.cod_tabela as procedimento_sus,
+    'PROCEDIMENTOS' as tipo_registro
   FROM
     agh.mam_proc_realizados as procedimentos
     LEFT OUTER JOIN agh.fat_conv_grupo_itens_proced as faturamento_grupos on faturamento_grupos.phi_seq = procedimentos.phi_seq
@@ -95,8 +97,8 @@ UNION
     AND '#endDate 23:59:59.999999'
     AND procedimentos.cbo IS NOT NULL
     AND procedimentos.phi_seq IS NOT NULL
-    AND faturamento_procedimentos.cod_tabela IN (#procedimentosBPAc)
-    AND faturamento_procedimentos.cod_tabela NOT IN (#procedimentosPAB)
+    --AND faturamento_procedimentos.cod_tabela IN (#procedimentosBPAc)
+    --AND faturamento_procedimentos.cod_tabela NOT IN (#procedimentosPAB)
     AND procedimentos.pac_codigo <> 1000001
     AND cbos.codigo IS NOT NULL
   group by
@@ -104,7 +106,49 @@ UNION
     2,
     4
 )
+UNION
+-- Exames ↓
+(
+SELECT 
+       exames.cbo_principal AS cbo,
+       pacientes.idade as idade,
+       count(*) as quantidade,
+       procedimentosus.cod_tabela as procedimento_sus,
+       'EXAMES' as tipo_registro
+
+  /*   exames.prontuario as "PACIENTE_PRONTUARIO", 
+       pacientes.ddd_fone_residencial as "PACIENTE_TELEFONE_DDD",
+       pacientes.fone_residencial as "PACIENTE_TELEFONE",
+       to_char(exames.dthr_solicitacao,'YYYYMMDD') AS "DATA_CONSULTA",
+       pacientes.idade as "PACIENTE_IDADE"
+  */     
+  FROM PUBLIC.VW_EXAMES AS exames
+  
+  LEFT JOIN PUBLIC.VW_DADOS_PACIENTES AS pacientes
+    ON pacientes.PAC_CODIGO = exames.PAC_CODIGO
+  
+  LEFT OUTER JOIN agh.fat_proced_hosp_internos AS procedimentos 
+    ON exames.ufe_ema_man_seq = procedimentos.ema_man_seq
+    AND exames.sigla_exame = procedimentos.ema_exa_sigla
+  
+  LEFT OUTER JOIN public.vw_fat_associacao_procedimentos as procedimentosus
+    ON procedimentosus.phi_seq = procedimentos.seq
+    AND procedimentosus.cpg_cph_csp_seq = (select max(cpg_cph_csp_seq) from public.vw_fat_associacao_procedimentos)
+    AND exames.sigla_exame = procedimentosus.exame_sigla
+  
+  LEFT OUTER JOIN agh.agh_atendimentos as atendimentos ON atendimentos.seq = exames.atd_seq
+ 
+  WHERE exames.dthr_liberada BETWEEN '#startDate 00:00:00' AND '#endDate 23:59:59.999999' -- PERIODO
+   AND exames.SIT_CODIGO = 'LI' -- LIBERADO
+   AND exames.PRONTUARIO <> '10000016'
+   AND exames.PRONTUARIO <> '20618740'
+   AND atendimentos.origem = 'A'
+  --AND procedimentosus.cod_tabela IN (#procedimentosBPAc)
+  --AND procedimentosus.cod_tabela NOT IN (#procedimentosPAB)
+  GROUP BY 1, 2, 4
+)
 order by
   1 asc,
   2 asc,
-  3 asc
+  3 asc,
+  5 asc

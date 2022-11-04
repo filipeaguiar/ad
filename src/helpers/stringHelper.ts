@@ -97,7 +97,8 @@ for (var i = 0; i < defaultDiacriticsRemovalMap.length; i++) {
 }
 
 function removeDiacritics(str) {
-  return str.replace(/[^\u0000-\u007E]/g, function (a) {
+  var checkedString = str ?? ''
+  return checkedString.replace(/[^\u0000-\u007E]/g, function (a) {
     return diacriticsMap[a] || a;
   });
 }
