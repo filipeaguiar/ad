@@ -139,7 +139,7 @@ SELECT
        1 as PROCEDIMENTO_QUANTIDADE,
        procedimentosus.cod_tabela as PROCEDIMENTO_SUS,
        pacientes.uf as UF,
-       pacientes.compl_logradouro as LOGRADOURO,
+       pacientes.logradouro as LOGRADOURO,
        pacientes.nro_logradouro as NRO,
        pacientes.compl_logradouro as COMPLEMENTO,
        pacientes.bairro as BAIRRO,
