@@ -1,15 +1,28 @@
 import { Request, Response } from 'express'
 import AIHProvider from '../providers/AIHProvider'
-import fs from 'fs'
-import { parse } from 'csv'
 import csvtojson from 'csvtojson'
+import stringHelper from '../helpers/stringHelper'
+
+const removeAccents = stringHelper.removeAccents
+
+const normalizeObject = (obj) => {
+    for (var i of Object.keys(obj)) {
+        obj[i].paciente_nome = removeAccents(obj[i].paciente_nome)
+        obj[i].paciente_nome_mae = removeAccents(obj[i].paciente_nome_mae)
+        obj[i].paciente_nome_responsavel = removeAccents(obj[i].paciente_nome_responsavel)
+        obj[i].paciente_logradouro = removeAccents(obj[i].paciente_logradouro)
+        obj[i].paciente_complemento_logradouro = removeAccents(obj[i].paciente_complemento_logradouro)
+        obj[i].paciente_bairro = removeAccents(obj[i].paciente_bairro)
+    }
+    return obj
+}
 
 const SISAIH = async (mesAno: String, file: any) => {
     try {
         const csvOptions = {
             delimiter: ';'
         }
-        let outputJSON = await csvtojson(csvOptions).fromFile(file)
+        let outputJSON = await csvtojson(csvOptions).fromFile(file, { encoding: 'binary' })
 
         let printable = ''
 
@@ -60,7 +73,7 @@ const SISAIH = async (mesAno: String, file: any) => {
             printable += el['paciente_cartao_sus'].padStart(15, '0')
             printable += el['paciente_nacionalidade'].padStart(3, '0')
             printable += el['paciente_tipo_logradouro'].padStart(3, '0')
-            printable += el['paciente_logradouro'].padEnd(50, ' ')
+            printable += removeAccents(el['paciente_logradouro']).padEnd(50, ' ')
             printable += el['paciente_numero_logradouro'].padEnd(7, ' ')
             printable += el['paciente_complemento_logradouro'].substring(0, 15).padEnd(15, ' ')
             printable += el['paciente_bairro'].padEnd(30, ' ')
@@ -108,9 +121,9 @@ export default class AIHController {
      * @param next Objeto que representa o próximo middleware a ser executado
      */
     static async getAIH(req: Request, res: Response, next) {
-        console.log(req.query)
         const AIH = await AIHProvider.getAIH(req.query.startDate, req.query.endDate)
-        res.send(AIH)
+        const normalizedAIH = normalizeObject(AIH)
+        res.send(normalizedAIH)
     }
 
     /**
