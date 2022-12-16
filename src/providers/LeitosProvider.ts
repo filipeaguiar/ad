@@ -1,6 +1,6 @@
-import SQLHelper from "../helpers/sqlHelper";
 import db from "../resources/postgres";
 import path from 'path'
+import SQLHelper from "../helpers/sqlHelper";
 
 export default class LeitosProvider {
   static async getLeitos(): Promise<any> {
