@@ -132,7 +132,12 @@ SELECT
    AND exames.SIT_CODIGO = 'LI' -- LIBERADO
    AND exames.PRONTUARIO <> '10000016'
    AND exames.PRONTUARIO <> '20618740'
-   AND atendimentos.origem = 'A'
+   AND (
+    atendimentos.origem = 'A'
+    OR
+    exames.unid_func_executora like 'UAP:%'
+   )
+   -- AND atendimentos.origem = 'A'
   GROUP BY 1, 2, 4
 )
 order by

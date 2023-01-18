@@ -165,7 +165,12 @@ SELECT
    AND exames.SIT_CODIGO = 'LI' -- LIBERADO
    AND exames.PRONTUARIO <> '10000016'
    AND exames.PRONTUARIO <> '20618740'
-   AND atendimentos.origem = 'A'
+   AND (
+    atendimentos.origem = 'A'
+    OR
+    exames.unid_func_executora like 'UAP:%'
+   )
+  --AND atendimentos.origem = 'A'
   --AND procedimentosus.cod_tabela NOT IN (#procedimentosBPAc)
   --AND procedimentosus.cod_tabela NOT IN (#procedimentosPAB)
  ORDER BY exames.NOME_PACIENTE,
