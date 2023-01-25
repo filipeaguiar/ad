@@ -113,7 +113,7 @@ UNION
 -- Exames ↓
 (
 SELECT 
-       to_char(exames.dthr_solicitacao,'YYYYMMDD') AS DATA_PROCEDIMENTO,
+       to_char(exames.dthr_liberada,'YYYYMMDD') AS DATA_PROCEDIMENTO,
        exames.PAC_CODIGO,
        exames.num_solicitacao as num_consulta,
        exames.CARTAO_SUS_CNS as cns,
