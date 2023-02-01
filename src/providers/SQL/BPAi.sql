@@ -181,7 +181,7 @@ SELECT
 UNION
 -- PDT ↓
 (SELECT 
-tochar(descricoes.dthr_conclusao, 'YYYYMMDD') AS DATA_PROCEDIMENTO,
+to_char(descricoes.dthr_conclusao, 'YYYYMMDD') AS DATA_PROCEDIMENTO,
 atendimentos.seq AS NUM_CONSULTA,
 pacientes.pac_codigo,
 SERVIDORES_CNS.VALOR AS CNS,
