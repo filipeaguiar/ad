@@ -1,6 +1,7 @@
 SELECT
   internacoes.seq,
   especialidades.nome_especialidade as enfermaria,
+  internacoes.unf_seq as cod_unf,
   CASE
     WHEN (especialidades.nome_especialidade = 'OBSTETRÍCIA' AND internacoes.lto_lto_id IS NULL) THEN 'EX-COB'
     WHEN (especialidades.nome_especialidade = 'NEONATOLOGIA' AND internacoes.lto_lto_id IS NULL) THEN 'EX-UCIN'
