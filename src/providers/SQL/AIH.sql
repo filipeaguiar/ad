@@ -4,6 +4,7 @@ internacoes.seq,
 '01' AS tipo_aih,
 '202209'::text AS apresentacao_aih, -- Inserir variável com a data
 pacientes.prontuario AS paciente_prontuario,
+especialidades.sigla as especialidade_sigla,
 to_char(internacoes.dthr_internacao, 'YYYYMMDD') AS data_internacao,
 to_char(internacoes.dthr_alta_medica, 'YYYYMMDD') AS data_saida,
 'E260000001' AS orgao_emissor,
@@ -78,6 +79,9 @@ AND cids_internacao.ind_prioridade_cid = 'P'
 
 LEFT OUTER JOIN agh.agh_cids as cids
 ON cids_internacao.cid_seq = cids.seq
+
+LEFT OUTER JOIN agh.agh_especialidades as especialidades
+ON internacoes.esp_seq = especialidades.seq
 -------------------------
 
 --- DADOS DO SERVIDOR ---
@@ -109,5 +113,3 @@ AND internacoes.iph_seq = procedimentos.seq
 
 WHERE internacoes.dthr_alta_medica BETWEEN '#startDate 00:00:00' AND '#endDate 23:59:59.999999'
 AND pacientes.prontuario <> '10000016'
--- and internacoes.seq = 148104
--- and internacoes.seq = 148104
