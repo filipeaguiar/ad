@@ -2,7 +2,8 @@ SELECT
 internacoes.seq,
 '' AS nro_aih,
 '01' AS tipo_aih,
-'202209'::text AS apresentacao_aih, -- Inserir variável com a data
+to_char(internacoes.dthr_alta_medica, 'YYYYMM') AS apresentacao_aih,
+--'202209'::text AS apresentacao_aih, -- Inserir variável com a data
 pacientes.prontuario AS paciente_prontuario,
 especialidades.sigla as especialidade_sigla,
 to_char(internacoes.dthr_internacao, 'YYYYMMDD') AS data_internacao,
@@ -58,8 +59,8 @@ CASE
   WHEN (procedimentos.cod_tabela::text LIKE '30316%' AND dados_paciente.idade < 18) THEN '07'
   ELSE '00'
 END AS procedimento_tipo_leito,
-replace(cids.codigo, '.', '') AS procedimento_cid,
-replace(internacoes.tam_codigo, '.', '') AS procedimento_motivo_encerramento,
+'' procedimento_cid,
+'' procedimento_motivo_encerramento,
 pessoas.valor AS procedimento_documento_solicitante,
 pessoas.valor AS procedimento_documento_responsavel,
 '704803502697949' AS procedimento_documento_diretor_clinico,
@@ -113,3 +114,4 @@ AND internacoes.iph_seq = procedimentos.seq
 
 WHERE internacoes.dthr_alta_medica BETWEEN '#startDate 00:00:00' AND '#endDate 23:59:59.999999'
 AND pacientes.prontuario <> '10000016'
+AND procedimentos.cod_tabela::text NOT IN ('305010107', '305010093', '305010115', '305010123') -- Hemodiálise
