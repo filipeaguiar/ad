@@ -127,6 +127,16 @@ export default class AIHController {
     }
 
     /**
+     * @param req Objeto Request do ExpressJS
+     * @param res Objeto Response do ExpressJS
+     * @param next Objeto que representa o próximo middleware a ser executado
+     */
+    static async getAIHexames(req: Request, res: Response, next) {
+        const AIHexames = await AIHProvider.getAIHexames(req.query.startDate, req.query.endDate)
+        res.send(AIHexames)
+    }
+
+    /**
      * @param mesAno Mes e Ano da competência
      * @param file Caminho do arquivo
      * @returns Objeto com os dados do arquivo formatados

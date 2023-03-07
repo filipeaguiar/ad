@@ -5,7 +5,8 @@ internacoes.seq,
 to_char(internacoes.dthr_alta_medica, 'YYYYMM') AS apresentacao_aih,
 --'202209'::text AS apresentacao_aih, -- Inserir variável com a data
 pacientes.prontuario AS paciente_prontuario,
-especialidades.sigla as especialidade_sigla,
+unidades_funcionais.descricao AS unidade_funcional,
+especialidades.sigla AS especialidade_sigla,
 to_char(internacoes.dthr_internacao, 'YYYYMMDD') AS data_internacao,
 to_char(internacoes.dthr_alta_medica, 'YYYYMMDD') AS data_saida,
 'E260000001' AS orgao_emissor,
@@ -59,7 +60,8 @@ CASE
   WHEN (procedimentos.cod_tabela::text LIKE '30316%' AND dados_paciente.idade < 18) THEN '07'
   ELSE '00'
 END AS procedimento_tipo_leito,
-'' procedimento_cid,
+cids.codigo as procedimento_cid,
+'' procedimento_cid_secundario,
 '' procedimento_motivo_encerramento,
 pessoas.valor AS procedimento_documento_solicitante,
 pessoas.valor AS procedimento_documento_responsavel,
@@ -83,6 +85,9 @@ ON cids_internacao.cid_seq = cids.seq
 
 LEFT OUTER JOIN agh.agh_especialidades as especialidades
 ON internacoes.esp_seq = especialidades.seq
+
+LEFT OUTER JOIN agh.agh_unidades_funcionais as unidades_funcionais
+ON atendimentos.unf_seq = unidades_funcionais.seq
 -------------------------
 
 --- DADOS DO SERVIDOR ---
