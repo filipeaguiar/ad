@@ -5,6 +5,15 @@ import stringHelper from '../helpers/stringHelper'
 
 const removeAccents = stringHelper.removeAccents
 
+interface AIHExame {
+    int_seq: String,
+    nro_aih: String,
+    profissional_documento: String,
+    profissional_cbo: String,
+    procedimento_sus: String,
+    quantidade: String
+}
+
 const normalizeObject = (obj) => {
     for (var i of Object.keys(obj)) {
         obj[i].paciente_nome = removeAccents(obj[i].paciente_nome)
@@ -17,13 +26,36 @@ const normalizeObject = (obj) => {
     return obj
 }
 
-const SISAIH = async (mesAno: String, file: any) => {
+const SISAIHExames = (exames: AIHExame[], AIH, competencia) => {
+    const examesPorAIH = exames.filter(item => item.nro_aih === AIH)
+    let printable = ''
+    examesPorAIH.forEach(item => {
+        printable += '2'
+        printable += item.profissional_documento.padStart(15, '0')
+        printable += item.profissional_cbo.padStart(6, '0')
+        printable += '0'
+        printable += '5'
+        printable += '0000396'.padStart(14, '0')
+        printable += '2'
+        printable += item.profissional_documento.padStart(15, '0')
+        printable += item.procedimento_sus.padStart(10, '0')
+        printable += item.quantidade.padStart(3, '0')
+        printable += competencia.padStart(6, '0')
+        printable += '000'
+        printable += '000'
+
+    })
+    console.log(printable.length)
+    return printable
+}
+
+const SISAIH = async (mesAno: String, AIHFile: any, ExameFile: any) => {
     try {
         const csvOptions = {
             delimiter: ';'
         }
-        let outputJSON = await csvtojson(csvOptions).fromFile(file, { encoding: 'binary' })
-
+        let outputJSON = await csvtojson(csvOptions).fromFile(AIHFile, { encoding: 'binary' })
+        let outputExamesJSON = await csvtojson(csvOptions).fromFile(ExameFile, { encoding: 'binary' })
         let printable = ''
 
         outputJSON.forEach(el => {
@@ -83,7 +115,9 @@ const SISAIH = async (mesAno: String, file: any) => {
             printable += el['paciente_prontuario'].padStart(15, '0')
             printable += '0000' // Numero da Enfermaria
             printable += '0000' // Numero do Leito
-            printable += ''.padEnd(711, '0') // PROCEDIMENTOS SECUNDÁRIOS
+            printable += SISAIHExames(outputExamesJSON, el['nro_aih'], mesAno).padEnd(711, '0')
+            //printable += ''.padEnd(711, '0') // PROCEDIMENTOS SECUNDÁRIOS
+
             printable += ''.padEnd(19, '0') // FILLER do *Layout*
             printable += ''.padStart(48, '0')
             printable += ''.padEnd(4, ' ') // Cid Notificação - Laqueadura
@@ -144,9 +178,11 @@ export default class AIHController {
 
     static async getSISAIH(req: Request, res: Response, next) {
         try {
+            const exameFileArray = req.params.fileName.split('-')
+            const exameFile = `${req.app.locals.__basedir}/aih/${exameFileArray[0]}-${exameFileArray[1]}-${exameFileArray[2]}-${exameFileArray[3]}-Exames.csv`
             const competencia = req.params.fileName.substring(0, 4) + req.params.fileName.substring(5, 7)
             const aihFile = `${req.app.locals.__basedir}/aih/${req.params.fileName}`
-            const sisaihContent: any = await SISAIH(competencia, aihFile)
+            const sisaihContent: any = await SISAIH(competencia, aihFile, exameFile)
             res.charset = 'iso-8859-1';
             res.setHeader('Content-type', 'text/plain; charset=iso-8859-1')
             const sisaih = Buffer.from(sisaihContent.data, 'latin1')

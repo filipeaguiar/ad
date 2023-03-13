@@ -60,7 +60,7 @@ CASE
   WHEN (procedimentos.cod_tabela::text LIKE '30316%' AND dados_paciente.idade < 18) THEN '07'
   ELSE '00'
 END AS procedimento_tipo_leito,
-cids.codigo as procedimento_cid,
+replace(cids.codigo, '.', '' ) as procedimento_cid,
 '' procedimento_cid_secundario,
 '' procedimento_motivo_encerramento,
 pessoas.valor AS procedimento_documento_solicitante,

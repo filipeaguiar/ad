@@ -1,9 +1,9 @@
 SELECT 
 atendimentos.int_seq, 
 '' AS nro_aih,
-exames.cartao_sus_cns AS procedimento_documento_solicitante,
-exames.cbo_principal AS solicitante_cbo,
-procedimentosus.cod_tabela as procedimento_sus,
+servidores.procedimento_documento_solicitante AS profissional_documento,
+servidores.solicitante_cbo AS profissional_cbo,
+procedimentosus.cod_tabela AS procedimento_sus,
 count(*) AS quantidade
 
 FROM public.vw_exames AS exames
@@ -26,6 +26,11 @@ ON procedimentosus.phi_seq = procedimentos.seq
 AND procedimentosus.cpg_cph_csp_seq = (select max(cpg_cph_csp_seq) from public.vw_fat_associacao_procedimentos)
 AND exames.sigla_exame = procedimentosus.exame_sigla
 -------------------------
+
+--- DADOS SERVIDOR ---
+LEFT OUTER JOIN public.vw_extrato_item_exames_executor as servidores
+ON atendimentos.int_seq = servidores.int_seq
+-----------------------
 
 WHERE atendimentos.seq in (
 SELECT 
