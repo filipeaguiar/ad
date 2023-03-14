@@ -1,8 +1,8 @@
 SELECT 
 atendimentos.int_seq, 
 '' AS nro_aih,
-servidores.procedimento_documento_solicitante AS profissional_documento,
-servidores.solicitante_cbo AS profissional_cbo,
+servidores.cartao_sus_cns AS documento_profissional,
+servidores.cbo_principal AS profissional_cbo,
 procedimentosus.cod_tabela AS procedimento_sus,
 count(*) AS quantidade
 
@@ -29,7 +29,7 @@ AND exames.sigla_exame = procedimentosus.exame_sigla
 
 --- DADOS SERVIDOR ---
 LEFT OUTER JOIN public.vw_extrato_item_exames_executor as servidores
-ON atendimentos.int_seq = servidores.int_seq
+ON exames.num_solicitacao = servidores.ise_soe_seq
 -----------------------
 
 WHERE atendimentos.seq in (
