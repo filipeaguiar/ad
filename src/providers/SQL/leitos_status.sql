@@ -19,8 +19,12 @@ WHEN extratos.tml_codigo = 32 THEN 'ALOCACAO TEMPORARIA'
 WHEN extratos.tml_codigo = 33 THEN 'BLOQUEIO HOTELARIA'
 WHEN extratos.tml_codigo = 34 THEN 'PERTENCES PACIENTE'
 WHEN extratos.tml_codigo = 60 THEN 'LEITO LIBERADO POR ALTA'
-END as status
+END as status,
+tipo_leito.descricao AS tipo
 FROM agh.ain_extrato_leitos as extratos
 LEFT OUTER JOIN agh.ain_leitos as leitos on extratos.lto_lto_id = leitos.lto_id
+LEFT OUTER JOIN agh.ain_tipo_classificacao_leito as classificacao on leitos.tpclsfcclto_seq = classificacao.seq
+LEFT OUTER JOIN agh.ain_tipo_leito_clinica as tipo_clinica on classificacao.tpltoclnc_seq = tipo_clinica.seq
+LEFT OUTER JOIN agh.ain_tipos_leitos as tipo_leito on tipo_clinica.tplto_seq = tipo_leito.seq
 WHERE leitos.ind_situacao = 'A'
 order by lto_lto_id, criado_em desc
