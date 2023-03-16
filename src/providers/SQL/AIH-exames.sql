@@ -4,6 +4,7 @@ atendimentos.int_seq,
 servidores.cartao_sus_cns AS documento_profissional,
 servidores.cbo_principal AS profissional_cbo,
 procedimentosus.cod_tabela AS procedimento_sus,
+exames.nome_exame AS procedimento_nome,
 count(*) AS quantidade
 
 FROM public.vw_exames AS exames

@@ -54,11 +54,11 @@ const SISAIH = async (mesAno: String, AIHFile: any, ExameFile: any) => {
         const csvOptions = {
             delimiter: ';'
         }
-        let outputJSON = await csvtojson(csvOptions).fromFile(AIHFile, { encoding: 'binary' })
+        let outputInternacoesJSON = await csvtojson(csvOptions).fromFile(AIHFile, { encoding: 'binary' })
         let outputExamesJSON = await csvtojson(csvOptions).fromFile(ExameFile, { encoding: 'binary' })
         let printable = ''
 
-        outputJSON.forEach(el => {
+        outputInternacoesJSON.forEach(el => {
             printable += '1'.padStart(8, '0') // Num lote
             printable += ''.padStart(3, '0') // Quantidade
             printable += mesAno.padEnd(6, ' ') // Competência
@@ -188,6 +188,35 @@ export default class AIHController {
             const sisaih = Buffer.from(sisaihContent.data, 'latin1')
             res.send(sisaih)
         } catch (err) {
+            res.send(err.message)
+        }
+    }
+
+    static async getRelatorio(req: Request, res: Response, next) {
+
+        const examesFile = `${req.app.locals.__basedir}/aih/${req.params.data}-${req.params.usuario}-Exames.csv`
+        const internacoesFile = `${req.app.locals.__basedir}/aih/${req.params.data}-${req.params.usuario}-Internacoes.csv`
+        try {
+
+            const csvOptions = {
+                delimiter: ';'
+            }
+            let outputInternacoesJSON = await csvtojson(csvOptions).fromFile(internacoesFile, { encoding: 'binary' })
+            let outputExamesJSON = await csvtojson(csvOptions).fromFile(examesFile, { encoding: 'binary' })
+
+            outputInternacoesJSON.forEach(internacao => {
+                var exames = outputExamesJSON.filter(exame => exame.nro_aih === internacao.nro_aih)
+                if (exames) {
+                    internacao.exames = exames
+                }
+            })
+
+            res.send(
+                outputInternacoesJSON
+            )
+        }
+        catch (err) {
+            console.log(examesFile, '\n', internacoesFile, '\n', err)
             res.send(err.message)
         }
     }
