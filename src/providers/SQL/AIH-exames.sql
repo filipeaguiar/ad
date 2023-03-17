@@ -42,6 +42,6 @@ ON atendimentos.int_seq = internacoes.seq
 WHERE internacoes.dthr_alta_medica BETWEEN '#startDate' AND '#endDate 23:59:59.999999'
 )
 
-GROUP BY 1,2,3,4,5
+GROUP BY 1,2,3,4,5,6
 
 ORDER BY 1
