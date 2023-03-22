@@ -2,17 +2,9 @@ import { Request, Response } from 'express'
 import AIHProvider from '../providers/AIHProvider'
 import csvtojson from 'csvtojson'
 import stringHelper from '../helpers/stringHelper'
+import { AIHExame, AIHInternacao } from '../types/aih'
 
 const removeAccents = stringHelper.removeAccents
-
-interface AIHExame {
-    int_seq: String,
-    nro_aih: String,
-    profissional_documento: String,
-    profissional_cbo: String,
-    procedimento_sus: String,
-    quantidade: String
-}
 
 const normalizeObject = (obj) => {
     for (var i of Object.keys(obj)) {
@@ -54,7 +46,7 @@ const SISAIH = async (mesAno: String, AIHFile: any, ExameFile: any) => {
         const csvOptions = {
             delimiter: ';'
         }
-        let outputInternacoesJSON = await csvtojson(csvOptions).fromFile(AIHFile, { encoding: 'binary' })
+        let outputInternacoesJSON: AIHInternacao[] = await csvtojson(csvOptions).fromFile(AIHFile, { encoding: 'binary' })
         let outputExamesJSON = await csvtojson(csvOptions).fromFile(ExameFile, { encoding: 'binary' })
         let printable = ''
 
@@ -70,7 +62,7 @@ const SISAIH = async (mesAno: String, AIHFile: any, ExameFile: any) => {
             printable += '01' // Tipo AIH: Principal
             printable += el['procedimento_tipo_leito'].padStart(2, '0') // Tipo do leito -- precisa ser investigado
             printable += ''.padEnd(45, '0') // Filler
-            printable += el['procedimento_modalidade'].padStar ?? '02' // Modalidade da AIH -- precisa ser investigado
+            printable += el['procedimento_modalidade'].padStart(2, '0') ?? '02' // Modalidade da AIH -- precisa ser investigado
             printable += '000' // Sequencial de AIH de continuidade
             printable += el['aih_posterior'].padStart(13, '0')
             printable += el['aih_anterior'].padStart(13, '0')
@@ -103,16 +95,16 @@ const SISAIH = async (mesAno: String, AIHFile: any, ExameFile: any) => {
             printable += '00000' // Solicitação de liberação
             printable += '00' // Filler
             printable += el['paciente_cartao_sus'].padStart(15, '0')
-            printable += el['paciente_nacionalidade'].padStart(3, '0')
+            printable += el['paciente_nacionalidade'].toString().padStart(3, '0')
             printable += el['paciente_tipo_logradouro'].padStart(3, '0')
             printable += removeAccents(el['paciente_logradouro']).padEnd(50, ' ')
-            printable += el['paciente_numero_logradouro'].padEnd(7, ' ')
+            printable += el['paciente_numero_logradouro'].toString().padEnd(7, ' ')
             printable += el['paciente_complemento_logradouro'].substring(0, 15).padEnd(15, ' ')
             printable += el['paciente_bairro'].padEnd(30, ' ')
-            printable += el['paciente_cidade'].substring(0, 6).padEnd(6, ' ')
+            printable += el['paciente_cidade'].toString().substring(0, 6).padEnd(6, ' ')
             printable += el['paciente_uf'].padEnd(2, ' ')
-            printable += el['paciente_cep'].padEnd(8, ' ')
-            printable += el['paciente_prontuario'].padStart(15, '0')
+            printable += el['paciente_cep'].toString().padEnd(8, ' ')
+            printable += el['paciente_prontuario'].toString().padStart(15, '0')
             printable += '0000' // Numero da Enfermaria
             printable += '0000' // Numero do Leito
             printable += SISAIHExames(outputExamesJSON, el['nro_aih'], mesAno).padEnd(711, '0')
