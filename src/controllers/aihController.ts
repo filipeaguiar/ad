@@ -23,13 +23,13 @@ const SISAIHExames = (exames: AIHExame[], AIH, competencia) => {
     let printable = ''
     examesPorAIH.forEach(item => {
         printable += '2'
-        printable += item.profissional_documento.padStart(15, '0')
+        printable += item.profissional_documento?.padStart(15, '0') ?? ''.padStart(15, '0')
         printable += item.profissional_cbo.padStart(6, '0')
         printable += '0'
         printable += '5'
         printable += '0000396'.padStart(14, '0')
         printable += '2'
-        printable += item.profissional_documento.padStart(15, '0')
+        printable += item.profissional_documento?.padStart(15, '0') ?? ''.padStart(15, '0')
         printable += item.procedimento_sus.padStart(10, '0')
         printable += item.quantidade.padStart(3, '0')
         printable += competencia.padStart(6, '0')
