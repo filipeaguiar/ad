@@ -100,7 +100,6 @@ export default class ccihController {
           internacaoSolicitacoes = internacao.seq?.split(',')
         }
         if (internacaoSolicitacoes.includes(resultado.solicitacao.toString())) {
-          console.log(internacaoSolicitacoes)
           internacao.resultados.push(resultado)
         }
       })
