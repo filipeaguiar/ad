@@ -10,7 +10,7 @@ type censo = {
   Especialidade: string,
   atendimento: number,
   resultados?: resultados[]
-  seq: number
+  seq: string
 }
 
 type resultados = {

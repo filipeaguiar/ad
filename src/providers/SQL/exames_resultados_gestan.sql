@@ -7,7 +7,7 @@ select
 
 from consulta_its_periodo('2023-01-01 00:00:00', CURRENT_DATE) 
   
-where ris = 'R' 
+--where ris = 'R' 
   
 group by  
 	solicitacao 
