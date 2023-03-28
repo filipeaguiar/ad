@@ -65,8 +65,6 @@ function flattenArray(array) {
     Paciente,
     Data,
     Especialidade,
-    atendimento,
-    seq,
     material,
     germe,
     dh_liberacao,
@@ -106,7 +104,8 @@ export default class ccihController {
       resultArray.push(internacao)
     })
 
-    res.send(jsonToCsv(flattenArray(resultArray)))
+    res.set({ 'Content-Type': 'text/csv; charset=windows-1252' })
+    res.send('\uFEFF' + jsonToCsv(flattenArray(resultArray)))
 
   }
 }
