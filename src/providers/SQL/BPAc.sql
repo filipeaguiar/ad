@@ -70,6 +70,7 @@
     and ret.descricao <> 'PACIENTE DESISTIU CONS'
     and consultas.pac_codigo <> 1000001
     and servidores_informacoes_cbo.valor is not null
+    and consultas.grd_seq NOT IN (582, 579, 1488, 1782, 1972, 1970, 1974, 1968, 1976, 1958, 1977, 1980, 1978, 1982, 1983, 2034, 1994, 1988, 2016, 1992, 2036, 1998, 2000, 2002, 2006, 2005, 1996, 2004, 2014, 2030, 2032, 2038, 2040, 2039, 2037)
   group by
     1,
     2,
