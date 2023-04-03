@@ -271,11 +271,12 @@ atendimentos.pac_codigo,
 servidores_dados.cartao_sus_cns AS CNS,
 servidores_pessoas.nome AS PROFISSIONAL_NOME,
 servidores_dados.cbo_principal AS CBO,
+pacientes.nro_cartao_saude AS PACIENTE_CARTAO_SUS,
 pacientes.nome AS PACIENTE_NOME,
 LEFT(pacientes.sexo, 1) AS PACIENTE_SEXO_BIOLOGICO,
 to_char(pacientes.dt_nascimento, 'YYYYMMDD') AS PACIENTE_DATA_NASCIMENTO,
 pacientes.nac_codigo AS PACIENTE_NACIONALIDADE,
-pacientes_dados.cidade_codigo_ibge AS CIDADE,
+substring(pacientes_dados.cidade_codigo_ibge::text, 1, 6) as CIDADE,
 CASE
   WHEN PACIENTES.COR = 'B' THEN '01'
   WHEN PACIENTES.COR = 'P' THEN '02'

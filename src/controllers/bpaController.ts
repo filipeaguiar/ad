@@ -272,15 +272,19 @@ const BPAcMagnetico = async function (mesAno: String, file: any) {
 export default class bpaController {
 
     static async getBPAc(req: Request, res: Response, next) {
-        const listaBPAc = await procedimentosBPAc()
-        const listaPAB = await procedimentosPAB()
+        const [listaBPAc, listaPAB] = await Promise.all([
+            procedimentosBPAc(),
+            procedimentosPAB()
+        ])
         const BPAc = await BPAProvider.getBPAc(req.params.mesAno, listaBPAc, listaPAB)
         res.send(BPAc)
     }
 
     static async getBPAi(req: Request, res: Response, next) {
-        const listaBPAc = await procedimentosBPAc()
-        const listaPAB = await procedimentosPAB()
+        const [listaBPAc, listaPAB] = await Promise.all([
+            procedimentosBPAc(),
+            procedimentosPAB()
+        ])
         const BPAi = await BPAProvider.getBPAi(req.params.mesAno, listaBPAc, listaPAB)
         res.send(BPAi)
     }
@@ -290,8 +294,12 @@ export default class bpaController {
             const competencia = req.params.mesAno.substring(0, 4) + '-' + req.params.mesAno.substring(4, 6)
             const bpacFile = `${req.app.locals.__basedir}/bpa/${competencia}-BPAc.csv`
             const bpaiFile = `${req.app.locals.__basedir}/bpa/${competencia}-BPAi.csv`
-            const bpac: any = await BPAcMagnetico(req.params.mesAno, bpacFile)
-            const bpai: any = await BPAiMagnetico(req.params.mesAno, bpaiFile)
+            const [bpac, bpai]:any = await Promise.all([
+                BPAcMagnetico(req.params.mesAno, bpacFile),
+                BPAiMagnetico(req.params.mesAno, bpaiFile)
+            ])
+            // const bpac: any = await BPAcMagnetico(req.params.mesAno, bpacFile)
+            // const bpai: any = await BPAiMagnetico(req.params.mesAno, bpaiFile)
             const validation = generateValidation(
                 bpac.somaProcedimentos,
                 bpac.totalProcedimentos,
