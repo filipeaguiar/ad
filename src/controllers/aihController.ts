@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
-import AIHProvider from '../providers/AIHProvider'
+import AIHProvider from '@/providers/AIHProvider'
 import csvtojson from 'csvtojson'
-import stringHelper from '../helpers/stringHelper'
-import { AIHExame, AIHInternacao } from '../types/aih'
+import stringHelper from '@/helpers/stringHelper'
+import { AIHExame, AIHInternacao } from '@/types/aih'
 
 const removeAccents = stringHelper.removeAccents
 
