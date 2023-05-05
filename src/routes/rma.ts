@@ -4,6 +4,6 @@ import rmaController from "../controllers/rmaController"
 
 const rmaRouter = Router()
 
-rmaRouter.get('/', jwtValidation.validate, rmaController.getRMA)
+rmaRouter.get('/', rmaController.getRMA)
 
 export default rmaRouter
