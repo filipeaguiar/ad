@@ -9,7 +9,9 @@ export default class rmaController {
      * @param next Objeto que representa o próximo middleware a ser executado
      */
     static async getRMA(req: Request, res: Response, next) {
-        const { start, end } = req.query
+        let { start, end } = req.query
+        start = start as string
+        end = end as string
         if (!start || !end) {
             res.send(await RMAProvider.getRMA())
         }
