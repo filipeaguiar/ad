@@ -317,8 +317,8 @@ LEFT OUTER JOIN public.vw_dados_pacientes AS pacientes_dados
   ON atendimentos.pac_codigo = pacientes_dados.pac_codigo
 
 LEFT OUTER JOIN agh.rap_servidores AS servidores
-  ON grades.ser_matricula = servidores.matricula
-  AND grades.ser_vin_codigo = servidores.vin_codigo
+  ON grades.pre_ser_matricula = servidores.matricula
+  AND grades.pre_ser_vin_codigo = servidores.vin_codigo
 
 LEFT OUTER JOIN agh.rap_pessoas_fisicas AS servidores_pessoas
   ON servidores.pes_codigo = servidores_pessoas.codigo
