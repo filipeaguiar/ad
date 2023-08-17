@@ -18,15 +18,15 @@ import bpaRouter from './routes/bpa'
 import aihRouter from './routes/aih'
 import uploadRouter from './routes/upload'
 import internacaoRouter from './routes/internacao'
-import path from 'path'
 import procedimentosRouter from './routes/procedimentos'
 import relatorioConsultasRouter from './routes/relatorioConsultas'
 import relatorioPacientesFaltantesRouter from './routes/relatorioPacientesFaltantes'
 import medicamentosRouter from './routes/medicamentos'
-import mancheteRouter from './routes/manchete'
+//import mancheteRouter from './routes/manchete'
 import leitosRouter from './routes/leitos'
 import ccihRouter from './routes/ccih'
-
+import relatorioExamesRouter from './routes/relatorioExames'
+import path from 'path'
 
 /**
  * Carrega as variáveis de ambiente do arquivo .env para process.env
@@ -56,8 +56,9 @@ app.use('/api/procedimentos', procedimentosRouter)
 app.use('/api/relatorioconsultas', relatorioConsultasRouter)
 app.use('/api/relatoriopacientesfaltantes', relatorioPacientesFaltantesRouter)
 app.use('/api/medicamentos', medicamentosRouter)
-app.use('/api/manchete', mancheteRouter)
+//app.use('/api/manchete', mancheteRouter)
 app.use('/api/ccih', ccihRouter)
+app.use('/api/relatorioexames', relatorioExamesRouter)
 app.use(Express.urlencoded({ extended: true }))
 app.use(require('connect-history-api-fallback')())
 // Rota genérica, que redireciona todas as requisições para o /
