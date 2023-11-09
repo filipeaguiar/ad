@@ -96,6 +96,7 @@ UNION
     procedimentos.dthr_valida BETWEEN '#startDate 00:00:00' AND '#endDate 23:59:59.999999'
     AND procedimentos.cbo IS NOT NULL
     AND procedimentos.phi_seq IS NOT NULL
+    AND faturamento_registros.cod_registro = '02'
     AND procedimentos.pac_codigo <> 1000001
     AND cbos.codigo IS NOT NULL
   group by
