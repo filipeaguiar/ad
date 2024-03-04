@@ -15,3 +15,10 @@ model Manchete {
   link        String?
   expiration  DateTime @default(now())
 }
+
+model Link {
+  id          Int      @id @default(autoincrement())
+  title       String
+  url         String
+  icon        String
+}
