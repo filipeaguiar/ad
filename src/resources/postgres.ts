@@ -23,7 +23,10 @@ export default class db {
         password: PG_PASSWORD,
         host: PG_HOST,
         port: Number(PG_PORT),
-        database: PG_DB
+        database: PG_DB,
+        ssl: false,
+        max: 5,
+        idleTimeoutMillis: 30000
     })
 
     public static poolGestam = new Pool({
