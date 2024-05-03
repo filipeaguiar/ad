@@ -1,5 +1,5 @@
 /**
- * Imports:
+ * @imports
  *  ExpressJS - Framework de backend
  *  dotenv - permite ler variáveis de ambiente definidas no arquivo .env
  *  cors - permite requisições externas à api
@@ -42,6 +42,7 @@ app.use(cors())
 app.use(Express.json())
 app.use('/', Express.static(__dirname + '/static'))
 app.locals.__basedir = path.join(__dirname, 'static')
+app.locals.__imagedir = process.env.UPLOAD_PATH
 
 // routes
 //app.use('/api/users/login', activeDirectoryAuthMiddleware.authenticateUser)

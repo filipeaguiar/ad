@@ -1,4 +1,5 @@
 import uploadFile from "../middlewares/uploadFile"
+import uploadImage from "../middlewares/uploadImage"
 import * as fs from 'fs'
 import dotenv from 'dotenv'
 import path from 'path'
@@ -13,6 +14,35 @@ export default class uploadController {
     static async upload(req, res) {
         try {
             await uploadFile(req, res)
+            if (req.file == undefined) {
+                console.log({ message: "Please upload a file!" })
+                return res.status(400).send({ message: "Please upload a file!" })
+            }
+            console.log({
+                message: "Uploaded the file successfully: " + req.file.originalname,
+            })
+            res.status(200).send({
+                message: "Uploaded the file successfully: " + req.file.originalname,
+            })
+        } catch (err) {
+            console.log({
+                message: `Could not upload the file: ${req.file.originalname}. ${err}`,
+            })
+            res.status(500).send({
+                message: `Could not upload the file: ${req.file.originalname}. ${err}`,
+            })
+        }
+    }
+
+    /**
+     * 
+     * @param req Objesto Request do ExpressJS
+     * @param res Objeto Response do ExpressJS
+     * @description Método para fazer upload de imagens do Painel de Dados BI
+     */
+    static async uploadImg(req, res) {
+        try {
+            await uploadImage(req, res)
             if (req.file == undefined) {
                 console.log({ message: "Please upload a file!" })
                 return res.status(400).send({ message: "Please upload a file!" })
