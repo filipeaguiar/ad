@@ -47,5 +47,10 @@
     "passport": "^0.5.0",
     "passport-activedirectory": "^1.0.4",
     "pg": "^8.7.1"
+  },
+  "overrides": {
+    "activedirectory": {
+      "ldapjs": "2.3.3"
+    }
   }
 }
