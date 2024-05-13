@@ -7,7 +7,7 @@ const maxSize = 20 * 1024 * 1024
 let storage = multer.diskStorage({
     destination: (req, file, cb) => {
         try {   
-            cb(null, process.env.UPLOAD_PATH )
+            cb(null, process.env.UPLOAD_PATH + '/img/' )
         }
         catch (err) {
             console.log(err)
