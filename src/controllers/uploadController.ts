@@ -63,6 +63,13 @@ export default class uploadController {
         }
     }
 
+    /** 
+     * @param req Objeto Request do ExpressJS
+     * @param res Objeto Response do ExpressJS
+     * @description Método para listar os arquivos do diretório bpa
+     * @returns Lista de arquivos do diretório bpa
+     * 
+    */
     static getListFiles(req, res) {
         const directoryPath = req.app.locals.__basedir + '/bpa'
         fs.readdir(directoryPath, function (err, files) {

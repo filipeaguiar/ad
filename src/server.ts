@@ -10,6 +10,7 @@
 import Express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
+import compression from 'compression'
 import activeDirectoryAuthMiddleware from './middlewares/activeDirectoryAuth'
 import userRouter from './routes/user'
 import rmaRouter from './routes/rma'
@@ -46,6 +47,7 @@ app.locals.__imagedir = process.env.UPLOAD_PATH
 
 // routes
 //app.use('/api/users/login', activeDirectoryAuthMiddleware.authenticateUser)
+app.use(compression())
 app.use('/api/rma', rmaRouter)
 app.use('/api/users', userRouter)
 app.use('/api/material', materialRouter)
