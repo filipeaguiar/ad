@@ -41,7 +41,6 @@ const app: Express.Application = Express()
 // configura os middlewares 
 app.use(cors())
 app.use(Express.json())
-app.use('/', Express.static(__dirname + '/static'))
 app.locals.__basedir = path.join(__dirname, 'static')
 app.locals.__imagedir = process.env.UPLOAD_PATH
 
@@ -67,6 +66,8 @@ app.use('/api/dashboard', dashboardRouter)
 app.use(Express.urlencoded({ extended: true }))
 app.use(require('connect-history-api-fallback')())
 // Rota genérica, que redireciona todas as requisições para o /
+app.use('/', Express.static(__dirname + '/static'))
+app.use('/img', Express.static(__dirname + '/static/img'))
 app.get('*', (req, res) => res.redirect('/'))
 // Inicia a aplicação ouvindo na porta definida
 app.listen(process.env.PORT || 3000, () => { console.log("Express Listening on port: " + process.env.PORT || 3000) })
