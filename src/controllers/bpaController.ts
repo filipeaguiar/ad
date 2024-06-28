@@ -68,6 +68,7 @@ const generateValidation = (
     bpaiSumProcedimentos: number,
     bpaiTotalProcedimentos: number) => {
 
+    // A fórmula de geração do código consta no documento PDF do DATASUS que descreve o layout do arquivo
     const validation = Math.floor((
         bpacSumProcedimentos +
         bpacTotalProcedimentos +

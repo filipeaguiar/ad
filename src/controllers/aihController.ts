@@ -6,6 +6,19 @@ import { AIHExame, AIHInternacao } from '@/types/aih'
 
 const removeAccents = stringHelper.removeAccents
 
+/**
+ * Função para normalizar os acentos de um objeto
+ * @param obj Objeto a ser normalizado
+ * @returns Objeto normalizado
+ * @example
+ * const obj = {
+ * nome: 'João',
+ * }
+ * normalizeObject(obj)
+ * // => {
+ * // nome: 'Joao'
+ * // }
+ */
 const normalizeObject = (obj) => {
     for (var i of Object.keys(obj)) {
         obj[i].paciente_nome = removeAccents(obj[i].paciente_nome)
@@ -18,6 +31,13 @@ const normalizeObject = (obj) => {
     return obj
 }
 
+/**
+ * @description Função para formatar os exames para o formato de arquivo SISAIH
+ * @param exames Array de exames
+ * @param AIH Número da AIH
+ * @param competencia Competência
+ * @returns String formatada para o SISAIH
+ */
 const SISAIHExames = (exames: AIHExame[], AIH, competencia) => {
     const examesPorAIH = exames.filter(item => item.nro_aih === AIH)
     let printable = ''
@@ -41,6 +61,13 @@ const SISAIHExames = (exames: AIHExame[], AIH, competencia) => {
     return printable
 }
 
+/**
+ * @description Função para formatar os dados de internações para o formato de arquivo SISAIH
+ * @param mesAno Mes e Ano da competência
+ * @param AIHFile Arquivo de AIH no formato CSV
+ * @param ExameFile Arquivo de Exames no formato CSV
+ * @returns Objeto com os dados formatados
+ */
 const SISAIH = async (mesAno: String, AIHFile: any, ExameFile: any) => {
     try {
         const csvOptions = {
@@ -145,6 +172,8 @@ export default class AIHController {
      * @param req Objeto Request do ExpressJS
      * @param res Objeto Response do ExpressJS
      * @param next Objeto que representa o próximo middleware a ser executado
+     * @returns AIH
+     * @description Função para buscar as AIHs
      */
     static async getAIH(req: Request, res: Response, next) {
         const AIH = await AIHProvider.getAIH(req.query.startDate, req.query.endDate)
