@@ -28,6 +28,7 @@ import leitosRouter from './routes/leitos'
 import ccihRouter from './routes/ccih'
 import relatorioExamesRouter from './routes/relatorioExames'
 import dashboardRouter from './routes/link'
+import prontuarioRouter from './routes/prontuario'
 import path from 'path'
 
 /**
@@ -63,6 +64,7 @@ app.use('/api/medicamentos', medicamentosRouter)
 app.use('/api/ccih', ccihRouter)
 app.use('/api/relatorioexames', relatorioExamesRouter)
 app.use('/api/dashboard', dashboardRouter)
+app.use('/api/prontuario', prontuarioRouter)
 app.use(Express.urlencoded({ extended: true }))
 app.use(require('connect-history-api-fallback')())
 // Rota genérica, que redireciona todas as requisições para o /

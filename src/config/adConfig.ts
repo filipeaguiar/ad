@@ -1,6 +1,9 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
+/**
+ * Configuração do Active Directory
+ */
 const config = {
     url:process.env.AD_URL,
     baseDN:process.env.AD_BASEDN,
