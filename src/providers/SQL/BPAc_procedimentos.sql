@@ -9,7 +9,7 @@
     agh.mam_proc_realizados as procedimentos
     LEFT OUTER JOIN agh.fat_conv_grupo_itens_proced as faturamento_grupos on faturamento_grupos.phi_seq = procedimentos.phi_seq
     LEFT OUTER JOIN agh.fat_itens_proced_hospitalar as faturamento_procedimentos on faturamento_procedimentos.pho_seq = faturamento_grupos.iph_pho_seq
-    and faturamento_procedimentos.seq = faturamento_grupos.iph_seq
+    AND faturamento_procedimentos.seq = faturamento_grupos.iph_seq
     LEFT OUTER JOIN agh.fat_procedimentos_registro as faturamento_registros on faturamento_registros.cod_procedimento = faturamento_procedimentos.cod_tabela
     LEFT OUTER JOIN agh.fat_cbos as cbos on cbos.seq = procedimentos.cbo
     LEFT OUTER JOIN agh.aip_pacientes as pacientes on pacientes.codigo = procedimentos.pac_codigo
