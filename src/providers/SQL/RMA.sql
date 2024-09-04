@@ -1,6 +1,7 @@
 SELECT
   mat.gmt_codigo cod_grupo,
   grupo.descricao AS grupo,
+  nf.tipo as tipo_nota,
   TO_CHAR(nf.dt_geracao, 'YYYY-MM-DD') AS dt_geracao,
   TO_CHAR(dt_entrada,'YYYY-MM-DD') AS dt_entrada,
   TO_CHAR(dt_emissao,'YYYY-MM-DD') AS dt_emissao,
