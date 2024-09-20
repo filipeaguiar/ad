@@ -96,4 +96,5 @@ Pasta que contém as fontes de dados da aplicação. Cada arquivo nessa pasta re
   A aplicação faz uso de outros módulos, além desses, que podem ser visualizados nas seções:
   
   - `dependencies`: Dependências de aplicação.
+  
   - `devDependencies`: Dependências de desenvolvimento, estas dependências não são usadas em ambiente de produção.
