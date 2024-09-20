@@ -78,3 +78,22 @@ Pasta que contém as fontes de dados da aplicação. Cada arquivo nessa pasta re
     c->>c: Lógica de Negócio
     c->>u: Dados Formatados<br>(json, csv) 
   ```
+
+  ## Tecnologias Utilizadas
+  O desenvolvimento da aplicação foi feito utilizando diversas tecnologias, entre elas se destacam:
+  - [ExpressJS](https://expressjs.com/pt-br/) - O Express é um framework para aplicativo da web do Node.js mínimo e flexível que fornece um conjunto robusto de recursos para aplicativos web e móveis.
+
+  - [Prisma](https://www.prisma.io/orm) - ORM que permite interação com banco de dados de forma facilitada.
+
+  - [ActiveDirectory](https://www.npmjs.com/package/activedirectory) - ActiveDirectory é um cliente ldapjs para authN (autenticação) e authZ (autorização) para o Microsoft Active Directory, com suporte para recuperação de intervalos em grandes instalações do Active Directory.
+
+  - [Multer](https://www.npmjs.com/package/multer) - Multer é um middleware do Node.js para lidar com multipart/form-data, que é utilizado principalmente para upload de arquivos.
+
+  - [Node-Postgres](https://www.npmjs.com/package/pg) - Cliente PostgreSQL não bloqueante para Node.js.
+
+  - [Node-OracleDB](https://www.npmjs.com/package/oracledb) - Cliente OracleDB para Node.js.
+
+  A aplicação faz uso de outros módulos, além desses, que podem ser visualizados nas seções:
+  
+  - `dependencies`: Dependências de aplicação.
+  - `devDependencies`: Dependências de desenvolvimento, estas dependências não são usadas em ambiente de produção.
