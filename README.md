@@ -57,3 +57,24 @@ Pasta que contém as fontes de dados da aplicação. Cada arquivo nessa pasta re
 
   - :file_folder: types/  
   Pasta que contém os types da aplicação. Esses dados são usados somente para auxiliar o desenvolvimento da aplicação, oferecendo funcionalidades de _autocomplete_ para o editor de código.
+
+## Diagrama de Sequência de uma requisição típica
+
+  ```mermaid
+  sequenceDiagram
+    actor u as usuário
+    participant m as middleware
+    participant r as route
+    participant c as controller
+    participant p as provider
+    participant b as banco
+
+    u->>r: Requisição<br>(pode sofrer<br>modificações<br>no middleware)
+    r->>c: Envio de Parâmetros
+    c->>p: Solicitação<br>de dados
+    p->>b: Consulta SQL
+    b->>p: Linhas do<br>banco
+    p->>c: Dados brutos
+    c->>c: Lógica de Negócio
+    c->>u: Dados Formatados<br>(json, csv) 
+  ```
