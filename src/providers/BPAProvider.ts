@@ -16,7 +16,7 @@ export default class BPAProvider {
             console.timeEnd('BPAi')
             console.time('FiltroBPAi')
             console.log('TOTAL', '\x1b[41m', 'BPAi', '\x1b[0m', '\x1b[31m', result.rows.length, '\x1b[0m')
-            result.rows = result.rows.filter(row => !(procedimentosBPAc.includes(row.procedimento_sus)))
+            // result.rows = result.rows.filter(row => !(procedimentosBPAc.includes(row.procedimento_sus)))
             result.rows = result.rows.filter(row => !(procedimentosPAB.includes(row.procedimento_sus)))
             console.log('FILTR', '\x1b[41m', 'BPAi', '\x1b[0m', '\x1b[33m', result.rows.length, '\x1b[0m')
             console.timeEnd('FiltroBPAi')
