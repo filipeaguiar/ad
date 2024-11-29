@@ -1,4 +1,3 @@
-
   SELECT
     cbos.codigo as cbo,
     date_part('year', age(pacientes.dt_nascimento)) as idade,

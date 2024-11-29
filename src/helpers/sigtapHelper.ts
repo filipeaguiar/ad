@@ -22,6 +22,27 @@ const procedimentosBPA = async (filename: string) => {
   }
 }
 
+const procedimentosBPAi = async (filename: string) => {
+  const filePath = path.join(__dirname, `../static/sigtap/${filename}`)
+  try {
+    const fileBuffer = await fsp.readFile(filePath, 'latin1')
+    const fileContent = fileBuffer.toString()
+    let registros = []
+    fileContent.split('\r\n').forEach(r => {
+      registros.push({
+        procedimento: r.substring(0, 10),
+        registro: r.substring(10, 12)
+      })
+    })
+    const registrosBPA = registros.filter(r => r.registro === '02')
+    const bpac = registrosBPA.map(r => `'${r.procedimento}'`)
+    return bpac.join(', ')
+  }
+  catch (err) {
+    console.log(err)
+  }
+}
+
 const procedimentosPAB = async (filename: string) => {
   const filePath = path.join(__dirname, `../static/sigtap/${filename}`)
   try {
