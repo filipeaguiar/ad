@@ -524,7 +524,7 @@ LEFT OUTER JOIN AGH.AIP_CIDADES AS CIDADES
  
 WHERE
 (
-dt_consulta between '2024-08-01 00:00:00' AND '2024-08-31 23:59:59.999999'
+dt_consulta between '#startDate 00:00:00' AND '#endDate 23:59:59.999999'
 )
 and PROCEDIMENTOS.ret_seq = 10
 and PROCEDIMENTOS.pac_codigo <> 1000001
