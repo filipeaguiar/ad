@@ -84,7 +84,7 @@ const generateValidation = (
  * @param file Caminho do arquivo
  * @returns Objeto com os dados do arquivo formatados
  */
-const BPAiMagnetico = async function (mesAno: String, file: any) {
+const BPAiMagnetico = async function(mesAno: String, file: any) {
     try {
         const csvOptions = {
             delimiter: ';'
@@ -209,7 +209,7 @@ const BPAiMagnetico = async function (mesAno: String, file: any) {
  * @param file Caminho do arquivo
  * @returns Objeto com os dados do arquivo formatados
  */
-const BPAcMagnetico = async function (mesAno: String, file: any) {
+const BPAcMagnetico = async function(mesAno: String, file: any) {
     const parser = parse({
         delimiter: ';',
         from_line: 2
@@ -295,7 +295,7 @@ export default class bpaController {
             const competencia = req.params.mesAno.substring(0, 4) + '-' + req.params.mesAno.substring(4, 6)
             const bpacFile = `${req.app.locals.__basedir}/bpa/${competencia}-BPAc.csv`
             const bpaiFile = `${req.app.locals.__basedir}/bpa/${competencia}-BPAi.csv`
-            const [bpac, bpai]:any = await Promise.all([
+            const [bpac, bpai]: any = await Promise.all([
                 BPAcMagnetico(req.params.mesAno, bpacFile),
                 BPAiMagnetico(req.params.mesAno, bpaiFile)
             ])
