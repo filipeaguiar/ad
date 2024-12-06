@@ -10,21 +10,31 @@ export default class BPAProvider {
         const file = path.join(__dirname, 'SQL/BPAi.sql')
         const file_consultas = path.join(__dirname, 'SQL/BPAi_consultas.sql')
         const file_exames = path.join(__dirname, 'SQL/BPAi_exames.sql')
+        const file_pdts = path.join(__dirname, 'SQL/BPAi_pdts.sql')
         const file_procedimentos = path.join(__dirname, 'SQL/BPAi_procedimentos.sql')
-        const file_teleconsultas = path.join(__dirname, 'SQL/BPAi_teleconsultas.sql')
-        const SQL = await SQLHelper.createQuery(file, { startDate, endDate, procedimentosBPAc, procedimentosPAB })
+        const file_teleatendimentos = path.join(__dirname, 'SQL/BPAi_teleatendimentos.sql')
+        //const SQL = await SQLHelper.createQuery(file, { startDate, endDate, procedimentosBPAc, procedimentosPAB })
         try {
             console.time('BPAi')
             console.log('Enviando consulta SQL BPAi')
-            const result = await db.pool.query(SQL)
+            //const result = await db.pool.query(SQL)
+            const [result_consultas, result_exames, result_pdts, result_procedimentos, result_teleatendimentos] = await Promise.all([
+                await db.pool.query(await SQLHelper.createQuery(file_consultas, { startDate, endDate, procedimentosBPAc, procedimentosPAB })),
+                await db.pool.query(await SQLHelper.createQuery(file_exames, { startDate, endDate, procedimentosBPAc, procedimentosPAB })),
+                await db.pool.query(await SQLHelper.createQuery(file_pdts, { startDate, endDate, procedimentosBPAc, procedimentosPAB })),
+                await db.pool.query(await SQLHelper.createQuery(file_procedimentos, { startDate, endDate, procedimentosBPAc, procedimentosPAB })),
+                await db.pool.query(await SQLHelper.createQuery(file_teleatendimentos, { startDate, endDate, procedimentosBPAc, procedimentosPAB })),
+            ])
             console.timeEnd('BPAi')
             console.time('FiltroBPAi')
-            console.log('TOTAL', '\x1b[41m', 'BPAi', '\x1b[0m', '\x1b[31m', result.rows.length, '\x1b[0m')
+            //console.log('TOTAL', '\x1b[41m', 'BPAi', '\x1b[0m', '\x1b[31m', result.rows.length, '\x1b[0m')
             // result.rows = result.rows.filter(row => !(procedimentosBPAc.includes(row.procedimento_sus)))
-            result.rows = result.rows.filter(row => !(procedimentosPAB.includes(row.procedimento_sus)))
-            console.log('FILTR', '\x1b[41m', 'BPAi', '\x1b[0m', '\x1b[33m', result.rows.length, '\x1b[0m')
+            //result.rows = result.rows.filter(row => !(procedimentosPAB.includes(row.procedimento_sus)))
+            //console.log('FILTR', '\x1b[41m', 'BPAi', '\x1b[0m', '\x1b[33m', result.rows.length, '\x1b[0m')
             console.timeEnd('FiltroBPAi')
-            return result.rows
+            let resultado = result_consultas.rows.concat(result_exames.rows, result_pdts.rows, result_procedimentos.rows, result_teleatendimentos.rows)
+            return resultado
+            //return result.rows
         } catch (error) {
             console.log(error)
         }
