@@ -8,6 +8,10 @@ export default class BPAProvider {
     static async getBPAi(mesAno: string, procedimentosBPAc: string, procedimentosPAB: string) {
         const { startDate, endDate } = SQLHelper.generateDates(mesAno)
         const file = path.join(__dirname, 'SQL/BPAi.sql')
+        const file_consultas = path.join(__dirname, 'SQL/BPAi_consultas.sql')
+        const file_exames = path.join(__dirname, 'SQL/BPAi_exames.sql')
+        const file_procedimentos = path.join(__dirname, 'SQL/BPAi_procedimentos.sql')
+        const file_teleconsultas = path.join(__dirname, 'SQL/BPAi_teleconsultas.sql')
         const SQL = await SQLHelper.createQuery(file, { startDate, endDate, procedimentosBPAc, procedimentosPAB })
         try {
             console.time('BPAi')
@@ -40,10 +44,10 @@ export default class BPAProvider {
             const result = await db.pool.query(SQL)
             console.timeEnd('Antigo')
             console.time('Novo')
-            const [ result_consultas, result_exames, result_procedimentos ] = await Promise.all([
-              await db.pool.query(SQL_consultas),
-              await db.pool.query(SQL_exames),
-              await db.pool.query(SQL_procedimentos),
+            const [result_consultas, result_exames, result_procedimentos] = await Promise.all([
+                await db.pool.query(SQL_consultas),
+                await db.pool.query(SQL_exames),
+                await db.pool.query(SQL_procedimentos),
             ])
             let resultado = result_consultas.rows.concat(result_procedimentos.rows, result_exames.rows)
             console.timeEnd('Novo')
