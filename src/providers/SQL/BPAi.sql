@@ -331,6 +331,7 @@ pacientes.prontuario <> 10000016
 -- Período
 AND descricoes.dthr_execucao BETWEEN '#startDate 00:00:00' AND '#endDate 23:59:59.999999')
 UNION
+-- TELEATENDIMENTOS ↓ 
 (
   SELECT 
 to_char(atendimentos.dt_consulta, 'YYYYMMDD') AS DATA_PROCEDIMENTO,
