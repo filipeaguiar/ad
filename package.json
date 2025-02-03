@@ -9,7 +9,8 @@
     "instalar": "git pull && npm i && npm run build && cp .env dist/.env && npm run copy-files &&service intranet restart",
     "copy-files": "cp ./src/providers/SQL/* ./dist/providers/SQL/",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prisma-studio": "npx prisma studio --browser none"
+    "prisma-studio": "npx prisma studio --browser none",
+    "test-api": "posting --collection $HOME/.config/posting/ad"
   },
   "keywords": [],
   "author": "",
