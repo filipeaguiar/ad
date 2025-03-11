@@ -1,7 +1,7 @@
 import util from 'util'
 import multer from 'multer'
 
-const maxSize = 20 * 1024 * 1024
+const maxSize = 30 * 1024 * 1024
 let storage = multer.diskStorage({
     destination: (req, file, cb) => {
         try {
