@@ -1,12 +1,3 @@
-/**
- * @imports
- *  ExpressJS - Framework de backend
- *  dotenv - permite ler variáveis de ambiente definidas no arquivo .env
- *  cors - permite requisições externas à api
- *  activeDirectoryMiddleware - Middleware que autentica o usuário no AD e retorna um JWT
- *  routes - rotas de aplicação 
- */
-
 import Express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
@@ -30,7 +21,17 @@ import relatorioExamesRouter from './routes/relatorioExames'
 import dashboardRouter from './routes/link'
 import prontuarioRouter from './routes/prontuario'
 import opmeRouter from './routes/opme'
+import metabaseRouter from './routes/metabase'
 import path from 'path'
+
+/**
+ * @imports
+ *  ExpressJS - Framework de backend
+ *  dotenv - permite ler variáveis de ambiente definidas no arquivo .env
+ *  cors - permite requisições externas à api
+ *  activeDirectoryMiddleware - Middleware que autentica o usuário no AD e retorna um JWT
+ *  routes - rotas de aplicação 
+ */
 
 /**
  * Carrega as variáveis de ambiente do arquivo .env para process.env
@@ -66,6 +67,7 @@ app.use('/api/ccih', ccihRouter)
 app.use('/api/relatorioexames', relatorioExamesRouter)
 app.use('/api/dashboard', dashboardRouter)
 app.use('/api/opme', opmeRouter)
+app.use('/api/metabase', metabaseRouter)
 app.use('/api/prontuario', prontuarioRouter)
 app.use(Express.urlencoded({ extended: true }))
 app.use(require('connect-history-api-fallback')())
