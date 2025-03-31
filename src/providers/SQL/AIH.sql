@@ -96,8 +96,8 @@ ON servidores.matricula = internacoes.ser_matricula_professor
 AND servidores.vin_codigo = internacoes.ser_vin_codigo_professor
 
 LEFT OUTER JOIN AGH.RAP_PESSOA_TIPO_INFORMACOES as pessoas
-   ON pessoas.PES_CODIGO = SERVIDORES.PES_CODIGO
-   AND pessoas.TII_SEQ = 7
+ON pessoas.PES_CODIGO = SERVIDORES.PES_CODIGO
+AND pessoas.TII_SEQ = 7
 -------------------------
 
 --- DADOS DO PACIENTE ---

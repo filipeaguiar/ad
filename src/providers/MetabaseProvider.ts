@@ -1,5 +1,8 @@
 import dotenv from 'dotenv'
 import axios from 'axios'
+import SQLHelper from '../helpers/sqlHelper'
+import path from 'path'
+import db from '../resources/postgres'
 
 dotenv.config()
 
@@ -30,6 +33,45 @@ interface CardInfo {
 }
 
 export default class MetabaseProvider {
+
+  static async getMetabaseViews() {
+    const file = path.join(__dirname, 'SQL/metabase_views.sql')
+    const SQL = await SQLHelper.createQuery(file)
+
+    try {
+      const result = await db.poolMetabase.query(SQL)
+      return (result.rows)
+    } catch (err) {
+      console.error(err.message)
+      return (err.message)
+    }
+  }
+
+  static async getMetabaseUsers() {
+    const file = path.join(__dirname, 'SQL/metabase_users.sql')
+    const SQL = await SQLHelper.createQuery(file)
+
+    try {
+      const result = await db.poolMetabase.query(SQL)
+      return (result.rows)
+    } catch (err) {
+      console.error(err.message)
+      return (err.message)
+    }
+  }
+
+  static async getMetabaseDashboardViews() {
+    const file = path.join(__dirname, 'SQL/metabase_dashboard_views.sql')
+    const SQL = await SQLHelper.createQuery(file)
+
+    try {
+      const result = await db.poolMetabase.query(SQL)
+      return (result.rows)
+    } catch (err) {
+      console.error(err.message)
+      return (err.message)
+    }
+  }
 
   static async getMetabaseCards() {
     const { METABASE_URL, METABASE_KEY } = process.env

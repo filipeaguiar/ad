@@ -13,7 +13,12 @@ const {
     PG_GESTAN_PASSWORD,
     PG_GESTAN_DB,
     PG_GESTAN_HOST,
-    PG_GESTAN_PORT
+    PG_GESTAN_PORT,
+    PG_METABASE_USER,
+    PG_METABASE_PASSWORD,
+    PG_METABASE_DB,
+    PG_METABASE_HOST,
+    PG_METABASE_PORT
 } = process.env
 
 
@@ -35,5 +40,13 @@ export default class db {
         host: PG_GESTAN_HOST,
         port: Number(PG_GESTAN_PORT),
         database: PG_GESTAN_DB
+    })
+
+    public static poolMetabase = new Pool({
+        user: PG_METABASE_USER,
+        password: PG_METABASE_PASSWORD,
+        host: PG_METABASE_HOST,
+        port: Number(PG_METABASE_PORT),
+        database: PG_METABASE_DB
     })
 }
