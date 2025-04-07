@@ -20,7 +20,7 @@ export default class metabaseController {
         const views = await MetabaseProvider.getMetabaseViews()
         if (req.params.anoMes) {
             const anoMes = req.params.anoMes
-            const viewsFiltered = views.filter(view => view.month.includes(anoMes))
+            let viewsFiltered = views.filter(view => view.month.includes(anoMes))
             res.send(viewsFiltered)
         }
         else {

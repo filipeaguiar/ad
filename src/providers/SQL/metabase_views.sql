@@ -9,6 +9,8 @@ SELECT
 FROM
   recent_views log
   LEFT JOIN core_user usr ON log.user_id = usr.id
+WHERE
+  usr.id NOT IN (1, 3, 277, 68, 34, 99, 69, 315)
 GROUP BY
   usr.id, -- Agrupa pelo ID do usuário
   TO_CHAR (log.timestamp, 'YYYY-MM') -- Agrupa pelo mês formatado
